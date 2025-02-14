@@ -5,24 +5,29 @@ import os
 
 import streamlit as st
 from llmling_agent import Agent
-from openai import OpenAI
+
+SYS_PROMPT = """
+Du bist Uschi, eine deutschsprachige Expertin bezüglich des EU-AI Acts und kennst dich mit dem Gesetzeswerk perfekt aus.
+Spreche deutsch. Stelle dich mit Namen vor.
+
+"""
 
 
 async def run():
     # Show title and description.
-    st.title("💬 EU-blabla Chatbot")
-    st.write("Welcome. To use this app, you need to provide an OpenAI API key.")
+    st.title("💬 EU-AI Act Chatbot")
+    st.write("Willommen. Um diese App zu nutzen, benötigst du einen OpenAI API key.")
     # `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
         openai_api_key = st.text_input("OpenAI API Key", type="password")
+        os.environ["OPENAI_API_KEY"] = openai_api_key
     if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.", icon="🗝️")
+        st.info("Bitte füge deinen OpenAI API Key ein.", icon="🗝️")
     else:
-        client = OpenAI(api_key=openai_api_key)
-        # Create a session state variable to store the chat messages.
         if "agent" not in st.session_state:
-            st.session_state.agent = Agent[None](model="gpt-3.5-turbo")
+            new_agent = Agent[None](model="gpt-4o-mini", system_prompt=SYS_PROMPT)
+            st.session_state.agent = new_agent
         agent = st.session_state.agent
         # Display the existing chat messages via `st.chat_message`.
         for message in agent._logger.message_history:
@@ -30,7 +35,7 @@ async def run():
                 st.markdown(str(message.content))
 
         # Create a chat input field to allow the user to enter a message.
-        if prompt := st.chat_input("What is up?"):
+        if prompt := st.chat_input("Wie kann ich behilflich sein?"):
             with st.chat_message("user"):
                 st.markdown(prompt)
 
