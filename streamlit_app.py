@@ -34,12 +34,14 @@ async def run():
             with st.chat_message("user"):
                 st.markdown(prompt)
 
-            # async with agent.run_stream(prompt) as stream:
-            #     with st.chat_message("assistant"):
-            #         response = st.write_stream(stream.stream())
-            msg = await agent.run(prompt)
-            with st.chat_message("assistant"):
-                st.markdown(msg.format())
+            async with agent.run_stream(prompt) as stream:
+                with st.chat_message("assistant"):
+                    message_placeholder = st.empty()
+                    async for chunk in stream.stream():
+                        message_placeholder.markdown(chunk)
+            # msg = await agent.run(prompt)
+            # with st.chat_message("assistant"):
+            #     st.markdown(msg.format())
 
 
 if __name__ == "__main__":
