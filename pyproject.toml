@@ -1,0 +1,10 @@
+[project]
+name = "chatbot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "llmling-agent[default]>=0.99.7",
+    "streamlit>=1.42.0",
+]
