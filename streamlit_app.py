@@ -26,10 +26,19 @@ async def run():
     st.write("Willommen. Um diese App zu nutzen, benötigst du einen OpenAI API key.")
     # `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
     model = st.text_input("Modell auswählen", value="gpt-4o-mini")
+    sys_prompt = st.text_area("System prompt", value=SYS_PROMPT)
     if "agent" not in st.session_state:
-        new_agent = Agent[None](model=model, system_prompt=SYS_PROMPT)
+        new_agent = Agent[None](model=model, system_prompt=sys_prompt)
         st.session_state.agent = new_agent
+
     agent = st.session_state.agent
+
+    def reset_agent():
+        new_agent = Agent[None](model=model, system_prompt=sys_prompt)
+        st.session_state.agent = new_agent
+
+    _ = st.button("Reset", on_click=reset_agent)
+
     # Display the existing chat messages via `st.chat_message`.
     for message in agent._logger.message_history:
         with st.chat_message(message.role):
