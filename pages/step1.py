@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import asyncio
-import io
+from typing import TYPE_CHECKING
 
-import streamlit as st
 from llmling_agent import Agent, StructuredAgent
+import streamlit as st
 
 from config import FORM_FIELDS, FormData
+
+
+if TYPE_CHECKING:
+    from streamlit.runtime.uploaded_file_manager import UploadedFile
+
 
 SYS_PROMPT = """\
 Du bist ein KI-Assistent der dabei hilft,
@@ -20,7 +25,7 @@ und strukturiere sie entsprechend der Vorgaben.
 MODEL_NAME = "gpt-4o-mini"
 
 
-def read_text_file(file: io.BytesIO) -> str:
+def read_text_file(file: UploadedFile) -> str:
     """Read text content from uploaded file."""
     try:
         return file.read().decode("utf-8")
@@ -54,7 +59,9 @@ def render_sidebar() -> None:
             st.session_state.system_prompt = SYS_PROMPT
 
         st.session_state.system_prompt = st.text_area(
-            "System Prompt", value=st.session_state.system_prompt, height=150
+            "System Prompt",
+            value=st.session_state.system_prompt,
+            height=150,
         )
 
 
@@ -91,8 +98,8 @@ async def main_async() -> None:
                 # Update form data with results
                 st.session_state.form_data = result.model_dump()
                 st.success("Datei erfolgreich verarbeitet!")
-        except Exception as e:
-            error_msg = f"Fehler beim Verarbeiten der Datei: {str(e)}"
+        except Exception as e:  # noqa: BLE001
+            error_msg = f"Fehler beim Verarbeiten der Datei: {e!s}"
             st.error(error_msg)
 
     # Create form fields
