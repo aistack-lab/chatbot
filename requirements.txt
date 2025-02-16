@@ -1,3 +1,4 @@
 streamlit
 llmling-agent[default]
 markitdown
+streamlit-pydantic

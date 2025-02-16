@@ -8,4 +8,5 @@ dependencies = [
     "llmling-agent[default]>=0.99.7",
     "streamlit>=1.42.0",
     "markitdown",
+    "streamlit-pydantic",
 ]
