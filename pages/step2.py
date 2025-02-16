@@ -10,6 +10,11 @@ from llmling_agent import Agent  # type: ignore
 
 from config import FormData
 
+SYSTEM_PROMPT = """\
+Du bist ein KI-Assistent der dabei hilft,
+Informationen zu strukturieren und zu analysieren.
+"""
+
 
 def render_sidebar() -> None:
     """Render the configuration sidebar."""
@@ -24,10 +29,7 @@ def render_sidebar() -> None:
 
         # System prompt
         if "system_prompt" not in st.session_state:
-            st.session_state.system_prompt = (
-                "Du bist ein KI-Assistent der dabei hilft, "
-                "Informationen zu strukturieren und zu analysieren."
-            )
+            st.session_state.system_prompt = SYSTEM_PROMPT
 
         st.session_state.system_prompt = st.text_area(
             "System Prompt", value=st.session_state.system_prompt, height=150

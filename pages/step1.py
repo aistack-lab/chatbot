@@ -11,10 +11,10 @@ from llmling_agent import Agent, StructuredAgent
 from config import FORM_FIELDS, FormData
 
 SYS_PROMPT = """\
-"Du bist ein KI-Assistent der dabei hilft, "
-"Informationen zu strukturieren und zu analysieren. "
-"Extrahiere die relevanten Informationen aus dem Text "
-"und strukturiere sie entsprechend der Vorgaben."
+Du bist ein KI-Assistent der dabei hilft,
+Informationen zu strukturieren und zu analysieren.
+Extrahiere die relevanten Informationen aus dem Text
+und strukturiere sie entsprechend der Vorgaben.
 """
 
 
