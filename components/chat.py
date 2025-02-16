@@ -5,13 +5,16 @@ from __future__ import annotations
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, AsyncIterator, Callable
+from typing import TYPE_CHECKING
 
 import streamlit as st
-from llmling_agent import Agent
+
 
 if TYPE_CHECKING:
-    from llmling_agent.models.tools import ToolCallInfo
+    from collections.abc import AsyncIterator, Callable
+
+    from llmling_agent import Agent
+    from llmling_agent.tools import ToolCallInfo
     from streamlit.delta_generator import DeltaGenerator
 
 Message = dict[str, str]
@@ -132,23 +135,21 @@ def create_chat_ui(
         try:
             # Get response from agent
             with st.chat_message("assistant"):
-                message_placeholder = st.empty()
+                msg_placeholder = st.empty()
 
                 with st.spinner("Denke nach..."):
-                    full_response = asyncio.run(
-                        _process_message(
-                            agent,
-                            prompt,
-                            message_placeholder,
-                            preprocess_message,
-                        )
+                    coro = _process_message(
+                        agent,
+                        prompt,
+                        msg_placeholder,
+                        preprocess_message,
                     )
+                    full_response = asyncio.run(coro)
 
                 # Add assistant response to chat history
-                chat_state.messages.append(
-                    {"role": "assistant", "content": full_response}
-                )
+                msg = {"role": "assistant", "content": full_response}
+                chat_state.messages.append(msg)
 
-        except Exception as e:
-            error_msg = f"Ein Fehler ist aufgetreten: {str(e)}"
+        except Exception as e:  # noqa: BLE001
+            error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
             st.error(error_msg)
