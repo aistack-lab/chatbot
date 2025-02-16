@@ -17,6 +17,8 @@ Extrahiere die relevanten Informationen aus dem Text
 und strukturiere sie entsprechend der Vorgaben.
 """
 
+MODEL_NAME = "gpt-4o-mini"
+
 
 def read_text_file(file: io.BytesIO) -> str:
     """Read text content from uploaded file."""
@@ -43,7 +45,7 @@ def render_sidebar() -> None:
 
         # Model selection
         if "model" not in st.session_state:
-            st.session_state.model = "gpt-4-turbo-preview"
+            st.session_state.model = MODEL_NAME
 
         st.session_state.model = st.text_input("Model", value=st.session_state.model)
 

@@ -6,7 +6,8 @@ import asyncio
 from typing import Any
 
 import streamlit as st
-from llmling_agent import Agent  # type: ignore
+from llmling_agent import Agent
+from streamlit.delta_generator import DeltaGenerator  # type: ignore
 
 from config import FormData
 
@@ -14,6 +15,8 @@ SYSTEM_PROMPT = """\
 Du bist ein KI-Assistent der dabei hilft,
 Informationen zu strukturieren und zu analysieren.
 """
+
+MODEL_NAME = "gpt-4o-mini"
 
 
 def render_sidebar() -> None:
@@ -23,7 +26,7 @@ def render_sidebar() -> None:
 
         # Model selection
         if "model" not in st.session_state:
-            st.session_state.model = "gpt-4-turbo-preview"
+            st.session_state.model = MODEL_NAME
 
         st.session_state.model = st.text_input("Model", value=st.session_state.model)
 
@@ -60,7 +63,7 @@ def format_context(form_data: FormData) -> str:
 async def process_chat_message(
     agent: Any,
     prompt: str,
-    message_placeholder: st.delta_generator.DeltaGenerator,
+    message_placeholder: DeltaGenerator,
 ) -> str:
     """Process a chat message and stream the response."""
     full_response = ""
