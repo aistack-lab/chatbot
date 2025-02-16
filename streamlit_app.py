@@ -1,63 +1,32 @@
+"""Welcome page for the EU-AI Act Analysis Tool."""
+
 from __future__ import annotations
 
-import asyncio
-
 import streamlit as st
-from llmling_agent import Agent
-
-SYS_PROMPT = """
-Du bist Uschi, eine deutschsprachige Expertin bezüglich des EU-AI Acts und kennst dich mit dem Gesetzeswerk perfekt aus.
-Spreche deutsch. Stelle dich mit Namen vor.
-Dein Job ist es, einkommende Information zu klassifizieren nach folgenden Kriterien:
-
-- Rechtliche Konsequenzen
-- Technische Konsequenzen
-- Ethische Konsequenzen
-- Wirtschaftliche Konsequenzen
-
-Falls dir Informationen fehlen, bitte frag nach.
-
-"""
 
 
-async def run():
-    # Show title and description.
-    st.title("💬 EU-AI Act Chatbot")
-    st.write("Willommen. Um diese App zu nutzen, benötigst du einen OpenAI API key.")
-    # `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-    model = st.text_input("Modell auswählen", value="gpt-4o-mini")
-    sys_prompt = st.text_area("System prompt", value=SYS_PROMPT)
-    if "agent" not in st.session_state:
-        new_agent = Agent[None](model=model, system_prompt=sys_prompt)
-        st.session_state.agent = new_agent
+def main() -> None:
+    """Render the welcome page."""
+    st.title("🤖 EU-AI Act Analyse Tool")
 
-    agent = st.session_state.agent
+    st.markdown("""
+    ## Willkommen!
 
-    def reset_agent():
-        new_agent = Agent[None](model=model, system_prompt=sys_prompt)
-        st.session_state.agent = new_agent
+    Dieses Tool hilft Ihnen dabei, Informationen im Kontext des EU-AI Acts zu
+    analysieren und zu strukturieren.
 
-    _ = st.button("Reset", on_click=reset_agent)
+    ### Workflow:
+    1. **Schritt 1**: Erfassen Sie die relevanten Informationen in einem
+       strukturierten Format
+    2. **Schritt 2**: Erhalten Sie eine detaillierte Analyse und können im Dialog
+       weitere Fragen klären
 
-    # Display the existing chat messages via `st.chat_message`.
-    for message in agent._logger.message_history:
-        with st.chat_message(message.role):
-            st.markdown(str(message.content))
+    Klicken Sie auf 'Start', um zu beginnen.
+    """)
 
-    # Create a chat input field to allow the user to enter a message.
-    if prompt := st.chat_input("Wie kann ich behilflich sein?"):
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        async with agent.run_stream(prompt) as stream:
-            with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-                async for chunk in stream.stream():
-                    message_placeholder.markdown(chunk)
-        # msg = await agent.run(prompt)
-        # with st.chat_message("assistant"):
-        #     st.markdown(msg.format())
+    if st.button("Start", use_container_width=True):
+        st.switch_page("pages/step1.py")
 
 
 if __name__ == "__main__":
-    asyncio.run(run())
+    main()
