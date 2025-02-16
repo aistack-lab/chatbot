@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from typing import TypeAlias
+from pydantic import BaseModel, ConfigDict
 
-from pydantic import BaseModel, Field
 
 # Type aliases
-ModelName: TypeAlias = str
-SystemPrompt: TypeAlias = str
+ModelName = str
+SystemPrompt = str
 
 # Default values
 DEFAULT_MODEL = "gpt-4-turbo-preview"
@@ -21,11 +20,22 @@ Gib deine Antworten auf Deutsch.
 class FormData(BaseModel):
     """Data structure for form inputs."""
 
-    title: str = Field(description="Titel des Projekts")
-    description: str = Field(description="Beschreibung des Projekts")
-    requirements: str = Field(description="Anforderungen des Projekts")
-    constraints: str = Field(description="Einschränkungen des Projekts")
-    additional_info: str = Field(description="Weitere relevante Informationen")
+    title: str = ""
+    """Titel des Projekts"""
+
+    description: str = ""
+    """Beschreibung des Projekts"""
+
+    requirements: str = ""
+    """Anforderungen des Projekts"""
+
+    constraints: str = ""
+    """Einschränkungen des Projekts"""
+
+    additional_info: str = ""
+    """Weitere relevante Informationen"""
+
+    model_config = ConfigDict(use_attribute_docstrings=True)
 
 
 # Field descriptions for the form - matches FormData fields
