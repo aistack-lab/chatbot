@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TypeAlias
+
+from pydantic import BaseModel, Field
 
 # Type aliases
 ModelName: TypeAlias = str
@@ -17,18 +18,17 @@ Gib deine Antworten auf Deutsch.
 """
 
 
-@dataclass
-class FormData:
+class FormData(BaseModel):
     """Data structure for form inputs."""
 
-    title: str
-    description: str
-    requirements: str
-    constraints: str
-    additional_info: str
+    title: str = Field(description="Titel des Projekts")
+    description: str = Field(description="Beschreibung des Projekts")
+    requirements: str = Field(description="Anforderungen des Projekts")
+    constraints: str = Field(description="Einschränkungen des Projekts")
+    additional_info: str = Field(description="Weitere relevante Informationen")
 
 
-# Field descriptions for the form
+# Field descriptions for the form - matches FormData fields
 FORM_FIELDS = {
     "title": "Titel des Projekts",
     "description": "Beschreibung",
