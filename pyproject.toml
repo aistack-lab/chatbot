@@ -10,7 +10,22 @@ dependencies = [
     "markitdown",
     "streamlit-pydantic",
 ]
-
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "pyreadline3",
+    "devtools",
+    # Only add below (Copier)
+    "pytest-asyncio>=0.24.0",
+]
+lint = [
+    "ruff",
+    "mypy[faster-cache]; python_version < '3.14'",
+    "mypy; python_version >= '3.14'",
+    # Only add below (Copier)
+]
 
 [tool.mypy]
 python_version = "3.12"
