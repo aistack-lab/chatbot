@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import TYPE_CHECKING
 
-import streamlit as st
 from llmling_agent import Agent
-from streamlit.delta_generator import DeltaGenerator  # type: ignore
+import streamlit as st
 
-from config import FormData
+
+if TYPE_CHECKING:
+    from streamlit.delta_generator import DeltaGenerator
+
+    from config import FormData
+
 
 SYSTEM_PROMPT = """\
 Du bist ein KI-Assistent der dabei hilft,
@@ -61,7 +65,7 @@ def format_context(form_data: FormData) -> str:
 
 
 async def process_chat_message(
-    agent: Any,
+    agent: Agent[None],
     prompt: str,
     message_placeholder: DeltaGenerator,
 ) -> str:
@@ -92,7 +96,8 @@ async def main_async() -> None:
     # Initialize agent if not already done
     if "agent" not in st.session_state:
         st.session_state.agent = Agent[None](
-            model=st.session_state.model, system_prompt=st.session_state.system_prompt
+            model=st.session_state.model,
+            system_prompt=st.session_state.system_prompt,
         )
 
     # Display form data as context
@@ -136,12 +141,11 @@ async def main_async() -> None:
                     )
 
                 # Add assistant response to chat history
-                st.session_state.messages.append(
-                    {"role": "assistant", "content": full_response}
-                )
+                msg = {"role": "assistant", "content": full_response}
+                st.session_state.messages.append(msg)
 
-        except Exception as e:
-            error_msg = f"Ein Fehler ist aufgetreten: {str(e)}"
+        except Exception as e:  # noqa: BLE001
+            error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
             st.error(error_msg)
 
 
