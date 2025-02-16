@@ -70,17 +70,15 @@ async def main_async() -> None:
 
     # Initialize agent
     if "structured_agent" not in st.session_state:
-        st.session_state.structured_agent = Agent[None](
+        agent = Agent[None](
             model=st.session_state.model,
             system_prompt=st.session_state.system_prompt,
-        ).to_structured(FormData)
+        )
+        st.session_state.structured_agent = agent.to_structured(FormData)
 
     # File upload section
-    uploaded_file = st.file_uploader(
-        "Text-Datei hochladen",
-        type=["txt"],
-        help="Laden Sie eine UTF-8 kodierte Textdatei hoch",
-    )
+    help_text = "Laden Sie eine UTF-8 kodierte Textdatei hoch"
+    uploaded_file = st.file_uploader("Text-Datei hochladen", type=["txt"], help=help_text)
 
     if uploaded_file is not None:
         try:
@@ -104,16 +102,11 @@ async def main_async() -> None:
         )
 
     # Check if all fields are filled
-    all_fields_filled = all(
-        bool(st.session_state.form_data[field].strip()) for field in FORM_FIELDS
-    )
+    all_filled = all(bool(st.session_state.form_data[f].strip()) for f in FORM_FIELDS)
 
     # Next button
-    if st.button(
-        "Weiter zu Schritt 2",
-        disabled=not all_fields_filled,
-        use_container_width=True,
-    ):
+    label = "Weiter zu Schritt 2"
+    if st.button(label, disabled=not all_filled, use_container_width=True):
         # Store the complete form data
         st.session_state.completed_form = FormData(**st.session_state.form_data)
         # Navigate to next page
