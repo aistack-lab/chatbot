@@ -97,10 +97,12 @@ async def main_async() -> None:
 
     # Initialize agent if not already done
     if "agent" not in st.session_state:
-        st.session_state.agent = Agent[None](
+        agent = Agent[None](
             model=st.session_state.model,
             system_prompt=st.session_state.system_prompt,
         )
+        await agent.__aenter__()
+        st.session_state.agent = agent
 
     # Display form data as context
     with st.expander("Kontext aus Schritt 1", expanded=True):

@@ -81,6 +81,7 @@ async def main_async() -> None:
             model=st.session_state.model,
             system_prompt=st.session_state.system_prompt,
         )
+        await agent.__aenter__()
         st.session_state.structured_agent = agent.to_structured(FormData)
 
     # File upload section
