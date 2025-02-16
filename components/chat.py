@@ -3,16 +3,35 @@
 from __future__ import annotations
 
 import asyncio
+from collections import defaultdict
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, AsyncIterator, Callable
 
 import streamlit as st
 from llmling_agent import Agent
-from llmling_agent.models.tools import ToolCallInfo
 
 if TYPE_CHECKING:
+    from llmling_agent.models.tools import ToolCallInfo
     from streamlit.delta_generator import DeltaGenerator
 
 Message = dict[str, str]
+
+
+@dataclass
+class ChatState:
+    """State for a chat instance."""
+
+    messages: list[Message]
+    tool_messages: list[str]
+
+
+def _get_chat_states() -> defaultdict[str, ChatState]:
+    """Get or initialize the chat states dictionary."""
+    if "chat_states" not in st.session_state:
+        st.session_state.chat_states = defaultdict(
+            lambda: ChatState(messages=[], tool_messages=[])
+        )
+    return st.session_state.chat_states
 
 
 async def _stream_response(
@@ -27,19 +46,18 @@ async def _stream_response(
     return full_response
 
 
-def _handle_tool_call(info: ToolCallInfo) -> None:
+def _handle_tool_call(agent_name: str, info: ToolCallInfo) -> None:
     """Handle tool call signals from the agent."""
-    if "tool_messages" not in st.session_state:
-        st.session_state.tool_messages = []
-
-    st.session_state.tool_messages.append(info.format())
+    chat_states = _get_chat_states()
+    chat_states[agent_name].tool_messages.append(info.format())
 
 
-def _display_tool_calls() -> None:
+def _display_tool_calls(agent_name: str) -> None:
     """Display tool calls in an expander."""
-    if "tool_messages" in st.session_state and st.session_state.tool_messages:
+    chat_states = _get_chat_states()
+    if chat_states[agent_name].tool_messages:
         with st.expander("🔧 Tool Aufrufe", expanded=False):
-            for msg in st.session_state.tool_messages:
+            for msg in chat_states[agent_name].tool_messages:
                 st.text(msg)
 
 
@@ -54,10 +72,15 @@ async def _process_message(
         prompt = preprocess_message(prompt)
 
     # Reset tool messages for this interaction
-    st.session_state.tool_messages = []
+    chat_states = _get_chat_states()
+    chat_states[agent.name].tool_messages = []
+
+    # Create a bound tool handler for this agent
+
+    tool_handler = lambda info: _handle_tool_call(agent.name, info)
 
     # Connect to the tool_used signal
-    agent.tool_used.connect(_handle_tool_call)
+    agent.tool_used.connect(tool_handler)
 
     try:
         full_response = ""
@@ -65,12 +88,12 @@ async def _process_message(
             full_response = await _stream_response(stream.stream(), placeholder)
 
         # Display tool calls after the response
-        _display_tool_calls()
+        _display_tool_calls(agent.name)
 
         return full_response
     finally:
         # Cleanup: disconnect the signal
-        agent.tool_used.disconnect(_handle_tool_call)
+        agent.tool_used.disconnect(tool_handler)
 
 
 def create_chat_ui(
@@ -85,27 +108,22 @@ def create_chat_ui(
         initial_message: Optional initial message to display
         preprocess_message: Optional function to preprocess messages before sending
     """
-    # Initialize message history
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-        if initial_message:
-            st.session_state.messages.append(
-                {"role": "assistant", "content": initial_message}
-            )
+    chat_states = _get_chat_states()
+    chat_state = chat_states[agent.name]
 
-    # Initialize tool messages if not exists
-    if "tool_messages" not in st.session_state:
-        st.session_state.tool_messages = []
+    # Initialize with initial message if provided and chat is empty
+    if initial_message and not chat_state.messages:
+        chat_state.messages.append({"role": "assistant", "content": initial_message})
 
-    # Display chat history with associated tool calls
-    for i, message in enumerate(st.session_state.messages):
+    # Display chat history
+    for message in chat_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
     # Chat input
     if prompt := st.chat_input("Ihre Frage..."):
         # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        chat_state.messages.append({"role": "user", "content": prompt})
 
         # Display user message
         with st.chat_message("user"):
@@ -127,7 +145,7 @@ def create_chat_ui(
                     )
 
                 # Add assistant response to chat history
-                st.session_state.messages.append(
+                chat_state.messages.append(
                     {"role": "assistant", "content": full_response}
                 )
 
