@@ -3,153 +3,106 @@
 from __future__ import annotations
 
 import asyncio
-from collections import defaultdict
-from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import streamlit as st
 
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Callable
+    from collections.abc import Callable
 
     from llmling_agent import Agent
-    from llmling_agent.tools import ToolCallInfo
     from streamlit.delta_generator import DeltaGenerator
+
 
 Message = dict[str, str]
 
 
-@dataclass
-class ChatState:
-    """State for a chat instance."""
-
-    messages: list[Message]
-    tool_messages: list[str]
-
-
-def _get_chat_states() -> defaultdict[str, ChatState]:
-    """Get or initialize the chat states dictionary."""
-    if "chat_states" not in st.session_state:
-        st.session_state.chat_states = defaultdict(
-            lambda: ChatState(messages=[], tool_messages=[])
-        )
-    return st.session_state.chat_states
-
-
 async def _stream_response(
-    stream: AsyncIterator[str],
-    placeholder: DeltaGenerator,
-) -> str:
-    """Stream a response to a placeholder."""
-    full_response = ""
-    async for chunk in stream:
-        full_response += chunk
-        placeholder.markdown(full_response)
-    return full_response
-
-
-def _handle_tool_call(agent_name: str, info: ToolCallInfo) -> None:
-    """Handle tool call signals from the agent."""
-    chat_states = _get_chat_states()
-    chat_states[agent_name].tool_messages.append(info.format())
-
-
-def _display_tool_calls(agent_name: str) -> None:
-    """Display tool calls in an expander."""
-    chat_states = _get_chat_states()
-    if chat_states[agent_name].tool_messages:
-        with st.expander("🔧 Tool Aufrufe", expanded=False):
-            for msg in chat_states[agent_name].tool_messages:
-                st.text(msg)
-
-
-async def _process_message(
     agent: Agent[None],
     prompt: str,
     placeholder: DeltaGenerator,
-    preprocess_message: Callable[[str], str] | None = None,
 ) -> str:
-    """Process a chat message and stream the response."""
-    if preprocess_message:
-        prompt = preprocess_message(prompt)
-
-    # Reset tool messages for this interaction
-    chat_states = _get_chat_states()
-    chat_states[agent.name].tool_messages = []
-
-    # Create a bound tool handler for this agent
-
-    tool_handler = lambda info: _handle_tool_call(agent.name, info)
-
-    # Connect to the tool_used signal
-    agent.tool_used.connect(tool_handler)
-
-    try:
-        full_response = ""
-        async with agent.run_stream(prompt) as stream:
-            full_response = await _stream_response(stream.stream(), placeholder)
-
-        # Display tool calls after the response
-        _display_tool_calls(agent.name)
-
-        return full_response
-    finally:
-        # Cleanup: disconnect the signal
-        agent.tool_used.disconnect(tool_handler)
+    """Stream the agent's response to a placeholder."""
+    full_response = ""
+    async with agent.run_stream(prompt) as stream:
+        async for chunk in stream.stream():
+            full_response += chunk
+            placeholder.markdown(full_response)
+    return full_response
 
 
 def create_chat_ui(
     agent: Agent[None],
-    initial_message: str | None = None,
-    preprocess_message: Callable[[str], str] | None = None,
+    *,
+    messages_key: str = "messages",
+    preprocess_first_message: Callable[[str], str] | None = None,
+    placeholder_text: str = "Ihre Frage...",
+    thinking_text: str = "Denke nach...",
 ) -> None:
-    """Create a chat UI with message history and input field.
+    """Create a chat UI that integrates with page's session state.
 
     Args:
-        agent: The agent to use for chat responses
-        initial_message: Optional initial message to display
-        preprocess_message: Optional function to preprocess messages before sending
+        agent: The agent to use for responses
+        messages_key: Key in session state to store messages
+        preprocess_first_message: Optional function to process the first message
+        placeholder_text: Text to show in the input placeholder
+        thinking_text: Text to show while processing
     """
-    chat_states = _get_chat_states()
-    chat_state = chat_states[agent.name]
-
-    # Initialize with initial message if provided and chat is empty
-    if initial_message and not chat_state.messages:
-        chat_state.messages.append({"role": "assistant", "content": initial_message})
+    # Initialize messages in session state if not present
+    if messages_key not in st.session_state:
+        st.session_state[messages_key] = []
 
     # Display chat history
-    for message in chat_state.messages:
+    for message in st.session_state[messages_key]:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
     # Chat input
-    if prompt := st.chat_input("Ihre Frage..."):
-        # Add user message to chat history
-        chat_state.messages.append({"role": "user", "content": prompt})
-
-        # Display user message
+    if prompt := st.chat_input(placeholder_text):
+        # Add and display user message
+        st.session_state[messages_key].append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)
 
         try:
-            # Get response from agent
+            # Process message through agent
             with st.chat_message("assistant"):
-                msg_placeholder = st.empty()
+                message_placeholder = st.empty()
 
-                with st.spinner("Denke nach..."):
-                    coro = _process_message(
-                        agent,
-                        prompt,
-                        msg_placeholder,
-                        preprocess_message,
+                # Preprocess first message if needed
+                if (
+                    not st.session_state[messages_key][:-1]
+                    and preprocess_first_message is not None
+                ):
+                    prompt = preprocess_first_message(prompt)
+
+                # Stream the response
+                with st.spinner(thinking_text):
+                    full_response = asyncio.run(
+                        _stream_response(
+                            agent=agent,
+                            prompt=prompt,
+                            placeholder=message_placeholder,
+                        )
                     )
-                    full_response = asyncio.run(coro)
 
-                # Add assistant response to chat history
-                msg = {"role": "assistant", "content": full_response}
-                chat_state.messages.append(msg)
+                # Add assistant response to history
+                st.session_state[messages_key].append({
+                    "role": "assistant",
+                    "content": full_response,
+                })
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
             st.error(error_msg)
+
+
+def clear_chat_history(messages_key: str = "messages") -> None:
+    """Clear the chat history from session state.
+
+    Args:
+        messages_key: The key used to store messages in session state
+    """
+    if messages_key in st.session_state:
+        st.session_state[messages_key] = []
