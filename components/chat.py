@@ -24,12 +24,12 @@ async def _stream_response(
     placeholder: DeltaGenerator,
 ) -> str:
     """Stream the agent's response to a placeholder."""
-    full_response = ""
+    response_parts: list[str] = []
     async with agent.run_stream(prompt) as stream:
         async for chunk in stream.stream():
-            full_response += chunk
-            placeholder.markdown(full_response)
-    return full_response
+            placeholder.markdown(chunk)
+            response_parts.append(chunk)
+    return "".join(response_parts)
 
 
 def create_chat_ui(

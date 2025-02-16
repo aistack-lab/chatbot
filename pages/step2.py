@@ -39,43 +39,45 @@ def render_sidebar() -> None:
             st.session_state.system_prompt = SYSTEM_PROMPT
 
         st.session_state.system_prompt = st.text_area(
-            "System Prompt", value=st.session_state.system_prompt, height=150
+            "System Prompt",
+            value=st.session_state.system_prompt,
+            height=150,
         )
 
 
 def format_context(form_data: FormData) -> str:
     """Format the form data into a context string."""
-    return f"""
-    Projektinformationen:
-
-    Titel: {form_data.title}
-
-    Beschreibung:
-    {form_data.description}
-
-    Anforderungen:
-    {form_data.requirements}
-
-    Einschränkungen:
-    {form_data.constraints}
-
-    Weitere Informationen:
-    {form_data.additional_info}
-    """
+    return (
+        "Projektinformationen:\n\n"
+        f"Titel: {form_data.title}\n\n"
+        f"Beschreibung:\n{form_data.description}\n\n"
+        f"Anforderungen:\n{form_data.requirements}\n\n"
+        f"Einschränkungen:\n{form_data.constraints}\n\n"
+        f"Weitere Informationen:\n{form_data.additional_info}"
+    )
 
 
 async def process_chat_message(
     agent: Agent[None],
     prompt: str,
     message_placeholder: DeltaGenerator,
+    is_first_message: bool = False,
 ) -> str:
     """Process a chat message and stream the response."""
-    full_response = ""
-    async with agent.run_stream(prompt) as stream:
+    # Only add context for the first message
+    if is_first_message:
+        context = format_context(st.session_state.completed_form)
+        full_prompt = f"{context}\n\nFrage: {prompt}"
+    else:
+        full_prompt = prompt
+
+    response_parts: list[str] = []
+    async with agent.run_stream(full_prompt) as stream:
         async for chunk in stream.stream():
-            full_response += chunk
-            message_placeholder.markdown(full_response)
-    return full_response
+            message_placeholder.markdown(chunk)
+            response_parts.append(chunk)
+
+    return "".join(response_parts)
 
 
 async def main_async() -> None:
@@ -127,22 +129,20 @@ async def main_async() -> None:
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
 
-                # Add context to the first message
-                if not st.session_state.messages[:-1]:
-                    context = format_context(st.session_state.completed_form)
-                    prompt = f"{context}\n\nFrage: {prompt}"
-
                 # Stream the response
                 with st.spinner("Denke nach..."):
                     full_response = await process_chat_message(
                         st.session_state.agent,
                         prompt,
                         message_placeholder,
+                        is_first_message=len(st.session_state.messages) <= 1,
                     )
 
                 # Add assistant response to chat history
-                msg = {"role": "assistant", "content": full_response}
-                st.session_state.messages.append(msg)
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": full_response,
+                })
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
