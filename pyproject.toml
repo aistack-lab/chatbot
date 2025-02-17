@@ -9,6 +9,7 @@ dependencies = [
     "streamlit>=1.42.0",
     "markitdown",
     "streamlit-pydantic",
+    "crewai_tools",
 ]
 [dependency-groups]
 dev = [
