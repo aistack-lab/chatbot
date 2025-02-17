@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-import asyncio
 import sys
 
 import streamlit as st
 
 
 if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    import asyncio
+    from asyncio import WindowsSelectorEventLoopPolicy
+
+    asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())
 
 
 def main() -> None:
