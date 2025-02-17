@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 
 import streamlit as st
 
 
-asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
 def main() -> None:
