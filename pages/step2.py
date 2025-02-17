@@ -103,7 +103,8 @@ async def main_async() -> None:
         )
         await agent.__aenter__()
         st.session_state.agent = agent
-
+    else:
+        agent = st.session_state.agent
     # Display form data as context
     with st.expander("Kontext aus Schritt 1", expanded=True):
         st.markdown(format_context(st.session_state.completed_form))

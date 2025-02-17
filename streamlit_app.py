@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
+
 import streamlit as st
+
+
+asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
 def main() -> None:
