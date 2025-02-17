@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, TypeVar
+from typing import TYPE_CHECKING, Final, Self, TypeVar
 
+from llmling_agent import Agent, StructuredAgent
 import streamlit as st
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
@@ -13,14 +14,36 @@ from config import DEFAULT_MODEL, DEFAULT_SYSTEM_PROMPT, FormData, ModelName, Sy
 
 
 if TYPE_CHECKING:
-    from llmling_agent import Agent, StructuredAgent
-
     from components.chat import Message
 
 
 @dataclass
-class GlobalState:
-    """Application-wide state."""
+class AppState:
+    """True application-wide state, shared across all sessions."""
+
+    form_agent: StructuredAgent[None, FormData] = field(
+        default_factory=lambda: Agent[None](
+            model=DEFAULT_MODEL,
+            system_prompt=DEFAULT_SYSTEM_PROMPT,
+        ).to_structured(FormData)
+    )
+    chat_agent: Agent[None] = field(
+        default_factory=lambda: Agent[None](
+            model=DEFAULT_MODEL,
+            system_prompt=DEFAULT_SYSTEM_PROMPT,
+        )
+    )
+
+    async def __aenter__(self) -> Self:
+        """Initialize all agents."""
+        await self.form_agent.__aenter__()
+        await self.chat_agent.__aenter__()
+        return self
+
+
+@dataclass
+class SessionState:
+    """State scoped to a single session."""
 
     model: ModelName = DEFAULT_MODEL
     system_prompt: SystemPrompt = DEFAULT_SYSTEM_PROMPT
@@ -31,7 +54,6 @@ class Step1State:
     """State for step 1."""
 
     form_data: FormData = field(default_factory=FormData)
-    structured_agent: StructuredAgent[None, FormData] | None = None
 
 
 @dataclass
@@ -39,33 +61,30 @@ class Step2State:
     """State for step 2."""
 
     messages: list[Message] = field(default_factory=list)
-    agent: Agent[None] | None = None
 
 
 StateT = TypeVar("StateT")
 
 
 class StateManager:
-    """Manages both global and page-specific state."""
+    """Manages session and page-specific state."""
 
-    GLOBAL_KEY: Final = "global_state"
+    SESSION_KEY: Final = "session_state"
     PAGE_KEY_PREFIX: Final = "page_state_"
 
     @classmethod
-    def _get_current_page_id(cls) -> str:
-        """Get the current page identifier from Streamlit context."""
-        ctx = get_script_run_ctx()
-        if not ctx:
-            raise RuntimeError("No Streamlit context found")
-
-        return Path(ctx.main_script_path).stem
+    @st.cache_resource
+    async def get_app_state(cls) -> AppState:
+        """Get the global application state."""
+        state = AppState()
+        return await state.__aenter__()
 
     @classmethod
-    def get_global_state(cls) -> GlobalState:
-        """Get application-wide state."""
-        if cls.GLOBAL_KEY not in st.session_state:
-            st.session_state[cls.GLOBAL_KEY] = GlobalState()
-        return st.session_state[cls.GLOBAL_KEY]
+    def get_session_state(cls) -> SessionState:
+        """Get session-scoped state."""
+        if cls.SESSION_KEY not in st.session_state:
+            st.session_state[cls.SESSION_KEY] = SessionState()
+        return st.session_state[cls.SESSION_KEY]
 
     @classmethod
     def get_page_state[T](cls, state_class: type[T]) -> T:
@@ -78,21 +97,11 @@ class StateManager:
         return st.session_state[key]
 
     @classmethod
-    def update_global_state(cls, state: GlobalState) -> None:
-        """Update the global state."""
-        st.session_state[cls.GLOBAL_KEY] = state
+    def _get_current_page_id(cls) -> str:
+        """Get the current page identifier from Streamlit context."""
+        ctx = get_script_run_ctx()
+        if not ctx:
+            msg = "No Streamlit context found"
+            raise RuntimeError(msg)
 
-    @classmethod
-    def update_page_state[T](cls, state: T) -> None:
-        """Update the current page's state."""
-        page_id = cls._get_current_page_id()
-        key = f"{cls.PAGE_KEY_PREFIX}{page_id}"
-        st.session_state[key] = state
-
-    @classmethod
-    def clear_page_state(cls) -> None:
-        """Clear the current page's state."""
-        page_id = cls._get_current_page_id()
-        key = f"{cls.PAGE_KEY_PREFIX}{page_id}"
-        if key in st.session_state:
-            del st.session_state[key]
+        return Path(ctx.main_script_path).stem
