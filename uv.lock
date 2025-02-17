@@ -1143,7 +1143,7 @@ wheels = [
 
 [[package]]
 name = "llmling-agent"
-version = "0.99.13"
+version = "0.99.14"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiosqlite" },
@@ -1168,9 +1168,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "upathtools" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/05/33/b0d20248ebdd4d5589afaf720ddb91ad36006b15075f0fdede0648430d80/llmling_agent-0.99.13.tar.gz", hash = "sha256:169df90bb074a522b879ac28921f26c584e9eb20a62ee89a457716418766d74e", size = 712657 }
+sdist = { url = "https://files.pythonhosted.org/packages/60/d4/1bc977b6ef5e90bd8c1a0c0687ecbdc5e52c57b0f36b93863ba683d773f0/llmling_agent-0.99.14.tar.gz", hash = "sha256:f865a73c9aacedf8fe4cf0865ea8bb75b114f2bf768c11ad84dce46f422c2aa4", size = 712670 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/23/b1/9e871d713aa627e4df1c62486695dfb2110971b2135f68c9ee762e73a056/llmling_agent-0.99.13-py3-none-any.whl", hash = "sha256:4c4170d29202c7e95719278079883a04d8dba2991b0a2225c556569288f38e3b", size = 407448 },
+    { url = "https://files.pythonhosted.org/packages/9c/42/40e2d56acaee2349d7da31f6a4564347098d401bb09c3263362a03878ed0/llmling_agent-0.99.14-py3-none-any.whl", hash = "sha256:1675a721c8ee8038822cd23082ab84a283a21363949cadb76fdd82847401aacb", size = 407455 },
 ]
 
 [package.optional-dependencies]
