@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import streamlit as st
 from tokonomics.model_discovery import ModelInfo, get_all_models
+from utils import run
 
 
 if TYPE_CHECKING:
@@ -76,3 +77,7 @@ def model_selector(
             on_change(selected_model)
 
     return selected_model
+
+
+if __name__ == "__main__":
+    run(model_selector)
