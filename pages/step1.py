@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from llmling_agent import Agent, StructuredAgent
 import streamlit as st
 
+from components.sidebar import render_sidebar
 from config import FORM_FIELDS, FormData
 
 
@@ -43,33 +44,11 @@ async def process_upload(
     return result.content
 
 
-def render_sidebar() -> None:
-    """Render the configuration sidebar."""
-    with st.sidebar:
-        st.title("Konfiguration")
-
-        # Model selection
-        if "model" not in st.session_state:
-            st.session_state.model = MODEL_NAME
-
-        st.session_state.model = st.text_input("Model", value=st.session_state.model)
-
-        # System prompt
-        if "system_prompt" not in st.session_state:
-            st.session_state.system_prompt = SYS_PROMPT
-
-        st.session_state.system_prompt = st.text_area(
-            "System Prompt",
-            value=st.session_state.system_prompt,
-            height=150,
-        )
-
-
 async def main_async() -> None:
     """Async main function for Step 1."""
     st.title("Schritt 1: Informationssammlung")
 
-    render_sidebar()
+    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYS_PROMPT)
 
     # Initialize form data in session state
     if "form_data" not in st.session_state:
