@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING
 
 import streamlit as st
@@ -32,7 +31,7 @@ async def _stream_response(
     return "".join(response_parts)
 
 
-def create_chat_ui(
+async def create_chat_ui(
     agent: Agent[None],
     *,
     messages_key: str = "messages",
@@ -79,12 +78,10 @@ def create_chat_ui(
 
                 # Stream the response
                 with st.spinner(thinking_text):
-                    full_response = asyncio.run(
-                        _stream_response(
-                            agent=agent,
-                            prompt=prompt,
-                            placeholder=message_placeholder,
-                        )
+                    full_response = await _stream_response(
+                        agent=agent,
+                        prompt=prompt,
+                        placeholder=message_placeholder,
                     )
 
                 # Add assistant response to history
@@ -106,3 +103,12 @@ def clear_chat_history(messages_key: str = "messages") -> None:
     """
     if messages_key in st.session_state:
         st.session_state[messages_key] = []
+
+
+if __name__ == "__main__":
+    from llmling_agent import Agent
+    from utils import run
+
+    agent = Agent[None](model="gpt-4o-mini")
+    coro = create_chat_ui(agent)
+    run(coro)
