@@ -5,7 +5,8 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from llmling_agent import Agent
+from crewai_tools import SerperDevTool
+from llmling_agent import Agent, Tool
 import streamlit as st
 
 
@@ -102,6 +103,8 @@ async def main_async() -> None:
             system_prompt=st.session_state.system_prompt,
         )
         await agent.__aenter__()
+        search_tool = SerperDevTool()
+        agent.tools.register_tool(Tool.from_crewai_tool(search_tool))
         st.session_state.agent = agent
     else:
         agent = st.session_state.agent
