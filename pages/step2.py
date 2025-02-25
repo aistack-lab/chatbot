@@ -9,6 +9,8 @@ from crewai_tools import SerperDevTool
 from llmling_agent import Agent, Tool
 import streamlit as st
 
+from components.sidebar import render_sidebar
+
 
 if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
@@ -22,28 +24,6 @@ Informationen zu strukturieren und zu analysieren.
 """
 
 MODEL_NAME = "gpt-4o-mini"
-
-
-def render_sidebar() -> None:
-    """Render the configuration sidebar."""
-    with st.sidebar:
-        st.title("Konfiguration")
-
-        # Model selection
-        if "model" not in st.session_state:
-            st.session_state.model = MODEL_NAME
-
-        st.session_state.model = st.text_input("Model", value=st.session_state.model)
-
-        # System prompt
-        if "system_prompt" not in st.session_state:
-            st.session_state.system_prompt = SYSTEM_PROMPT
-
-        st.session_state.system_prompt = st.text_area(
-            "System Prompt",
-            value=st.session_state.system_prompt,
-            height=150,
-        )
 
 
 def format_context(form_data: FormData) -> str:
@@ -94,7 +74,7 @@ async def main_async() -> None:
             st.switch_page("pages/step1.py")
         return
 
-    render_sidebar()
+    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
 
     # Initialize agent if not already done
     if "agent" not in st.session_state:
