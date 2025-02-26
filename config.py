@@ -5,18 +5,6 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict
 
 
-# Type aliases
-ModelName = str
-SystemPrompt = str
-
-# Default values
-DEFAULT_MODEL = "gpt-4-turbo-preview"
-DEFAULT_SYSTEM_PROMPT = """
-Du bist ein KI-Assistent der dabei hilft, Informationen zu strukturieren und zu analysieren.
-Gib deine Antworten auf Deutsch.
-"""
-
-
 class FormData(BaseModel):
     """Data structure for form inputs."""
 
