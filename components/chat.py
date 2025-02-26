@@ -14,9 +14,6 @@ if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
 
 
-Message = dict[str, str]
-
-
 async def _stream_response(
     agent: Agent[None],
     prompt: str,
