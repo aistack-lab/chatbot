@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import streamlit as st
 from tokonomics.model_discovery import ModelInfo, get_all_models
+
 from utils import run
 
 

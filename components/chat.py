@@ -107,6 +107,7 @@ def clear_chat_history(messages_key: str = "messages") -> None:
 
 if __name__ == "__main__":
     from llmling_agent import Agent
+
     from utils import run
 
     agent = Agent[None](model="gpt-4o-mini")

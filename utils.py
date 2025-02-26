@@ -18,7 +18,11 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
-def run(fn: Callable[..., T | Coroutine[Any, Any, T]], *args: Any, **kwargs: Any) -> None:
+def run(
+    fn: Callable[..., T | Coroutine[Any, Any, T]] | Coroutine[Any, Any, T],
+    *args: Any,
+    **kwargs: Any,
+) -> None:
     """Run a function or coroutine with Streamlit.
 
     If Streamlit runtime exists, execute the function directly. Otherwise,
@@ -38,7 +42,7 @@ def run(fn: Callable[..., T | Coroutine[Any, Any, T]], *args: Any, **kwargs: Any
             asyncio.run(coro)
         # Handle regular function
         else:
-            fn(*args, **kwargs)
+            fn(*args, **kwargs)  # type: ignore
     else:
         sys.argv = ["streamlit", "run", sys.argv[0]]
         sys.exit(main())
