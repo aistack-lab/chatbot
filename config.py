@@ -2,7 +2,16 @@
 
 from __future__ import annotations
 
+from llmling_agent import Tool
 from pydantic import BaseModel, ConfigDict
+
+import jira_tools
+import serper_search
+
+
+search_tool = Tool.from_callable(serper_search.SerperTool().search)
+create_issue_tool = Tool.from_callable(jira_tools.create_issue)
+search_jira_tool = Tool.from_callable(jira_tools.search_for_issues)
 
 
 class FormData(BaseModel):
