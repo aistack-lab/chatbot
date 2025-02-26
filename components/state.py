@@ -9,7 +9,6 @@ from llmling_agent import Agent, AnyAgent, ChatMessage, StructuredAgent
 import streamlit as st
 
 from config import FormData
-from serper_search import SerperTool
 
 
 SYS_PROMPT_STEP1 = """\
@@ -49,8 +48,6 @@ class State:
                 model=MODEL_NAME,
                 system_prompt=SYS_PROMPT_STEP2,
             )
-            search_tool = SerperTool()
-            chat_agent.tools.register_tool(search_tool.search)
             await chat_agent.__aenter__()
 
             st.session_state.agents = {

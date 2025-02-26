@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 from llmling_agent import Tool
+from llmling_agent_tools import serper_search
+from llmling_agent_tools.jira_tool import jira_tools
 from pydantic import BaseModel, ConfigDict
-
-import jira_tools
-import serper_search
 
 
 search_tool = Tool.from_callable(serper_search.SerperTool().search)
