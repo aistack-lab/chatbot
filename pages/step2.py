@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from llmling_agent import ChatMessage
 import streamlit as st
 
-from components.sidebar import render_sidebar
+from components.sidebar import render_agent_sidebar
 from components.state import state
 
 
@@ -21,9 +21,6 @@ SYSTEM_PROMPT = """\
 Du bist ein KI-Assistent der dabei hilft,
 Informationen zu strukturieren und zu analysieren.
 """
-
-MODEL_NAME = "gpt-4o-mini"
-AGENT_NAME = "agent"
 
 
 async def process_chat_message(
@@ -53,8 +50,8 @@ async def main_async() -> None:
         return
     await state.initialize()
     st.title("Schritt 2: Analyse und Dialog")
-    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
     chat_agent = state.chat_agent
+    render_agent_sidebar(chat_agent)
     with st.expander("Kontext aus Schritt 1", expanded=True):
         st.markdown(state.completed_form.format_context())
     # Display chat history

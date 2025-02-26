@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 
 import streamlit as st
 
-from components.sidebar import render_sidebar
+from components.sidebar import render_agent_sidebar
 from components.state import state
 from config import FORM_FIELDS, FormData
 from utils import read_text_file
 
 
 if TYPE_CHECKING:
-    from llmling_agent import StructuredAgent
+    from llmling_agent import MessageNode
 
 
 SYS_PROMPT = """\
@@ -28,7 +28,7 @@ MODEL_NAME = "gpt-4o-mini"
 
 
 async def process_upload(
-    agent: StructuredAgent[None, FormData],
+    agent: MessageNode[None, FormData],
     content: str,
 ) -> FormData:
     """Process uploaded content through the agent."""
@@ -42,7 +42,7 @@ async def main_async() -> None:
     await state.initialize()
     agent = state.form_agent
     st.title("Schritt 1: Informationssammlung")
-    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYS_PROMPT)
+    render_agent_sidebar(agent)
     # File upload section
     help_text = "Laden Sie eine UTF-8 kodierte Textdatei hoch"
     uploaded_file = st.file_uploader("Text-Datei hochladen", type=["txt"], help=help_text)
