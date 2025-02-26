@@ -24,6 +24,7 @@ Informationen zu strukturieren und zu analysieren.
 """
 
 MODEL_NAME = "gpt-4o-mini"
+AGENT_NAME = "agent"
 
 
 def format_context(form_data: FormData) -> str:
@@ -63,8 +64,6 @@ async def process_chat_message(
 
 async def main_async() -> None:
     """Async main function for Step 2."""
-    st.title("Schritt 2: Analyse und Dialog")
-
     # Check if we have form data
     if "completed_form" not in st.session_state:
         st.error(
@@ -74,20 +73,23 @@ async def main_async() -> None:
             st.switch_page("pages/step1.py")
         return
 
+    st.title("Schritt 2: Analyse und Dialog")
+
     render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
 
     # Initialize agent if not already done
-    if "agent" not in st.session_state:
+    if AGENT_NAME not in st.session_state:
         agent = Agent[None](
+            name=AGENT_NAME,
             model=st.session_state.model,
             system_prompt=st.session_state.system_prompt,
         )
         await agent.__aenter__()
         search_tool = SerperDevTool()
         agent.tools.register_tool(Tool.from_crewai_tool(search_tool))
-        st.session_state.agent = agent
+        st.session_state[AGENT_NAME] = agent
     else:
-        agent = st.session_state.agent
+        agent = st.session_state[AGENT_NAME]
     # Display form data as context
     with st.expander("Kontext aus Schritt 1", expanded=True):
         st.markdown(format_context(st.session_state.completed_form))
@@ -118,7 +120,7 @@ async def main_async() -> None:
                 # Stream the response
                 with st.spinner("Denke nach..."):
                     full_response = await process_chat_message(
-                        st.session_state.agent,
+                        st.session_state[AGENT_NAME],
                         prompt,
                         message_placeholder,
                         is_first_message=len(st.session_state.messages) <= 1,

@@ -24,6 +24,7 @@ und strukturiere sie entsprechend der Vorgaben.
 """
 
 MODEL_NAME = "gpt-4o-mini"
+AGENT_NAME = "structured_agent"
 
 
 def read_text_file(file: UploadedFile) -> str:
@@ -46,22 +47,22 @@ async def process_upload(
 
 async def main_async() -> None:
     """Async main function for Step 1."""
-    st.title("Schritt 1: Informationssammlung")
-
-    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYS_PROMPT)
-
     # Initialize form data in session state
     if "form_data" not in st.session_state:
         st.session_state.form_data = {field: "" for field in FORM_FIELDS}
 
     # Initialize agent
-    if "structured_agent" not in st.session_state:
+    if AGENT_NAME not in st.session_state:
         agent = Agent[None](
+            name=AGENT_NAME,
             model=st.session_state.model,
             system_prompt=st.session_state.system_prompt,
         )
         await agent.__aenter__()
-        st.session_state.structured_agent = agent.to_structured(FormData)
+        st.session_state[AGENT_NAME] = agent.to_structured(FormData)
+    st.title("Schritt 1: Informationssammlung")
+
+    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYS_PROMPT)
 
     # File upload section
     help_text = "Laden Sie eine UTF-8 kodierte Textdatei hoch"
@@ -72,7 +73,7 @@ async def main_async() -> None:
             content = read_text_file(uploaded_file)
             with st.spinner("Verarbeite Upload..."):
                 result = await process_upload(
-                    st.session_state.structured_agent,
+                    st.session_state[AGENT_NAME],
                     content,
                 )
                 # Update form data with results
