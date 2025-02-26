@@ -17,16 +17,6 @@ if TYPE_CHECKING:
     from llmling_agent import MessageNode
 
 
-SYS_PROMPT = """\
-Du bist ein KI-Assistent der dabei hilft,
-Informationen zu strukturieren und zu analysieren.
-Extrahiere die relevanten Informationen aus dem Text
-und strukturiere sie entsprechend der Vorgaben.
-"""
-
-MODEL_NAME = "gpt-4o-mini"
-
-
 async def process_upload(
     agent: MessageNode[None, FormData],
     content: str,

@@ -17,12 +17,6 @@ if TYPE_CHECKING:
     from streamlit.delta_generator import DeltaGenerator
 
 
-SYSTEM_PROMPT = """\
-Du bist ein KI-Assistent der dabei hilft,
-Informationen zu strukturieren und zu analysieren.
-"""
-
-
 async def process_chat_message(
     agent: Agent[None],
     prompt: str,
@@ -42,9 +36,8 @@ async def main_async() -> None:
     """Async main function for Step 2."""
     # Check if we have form data
     if "completed_form" not in st.session_state:
-        st.error(
-            "Keine Daten von Schritt 1 vorhanden. Bitte gehen Sie zurück zu Schritt 1."
-        )
+        msg = "Keine Daten von Schritt 1 vorhanden. Bitte gehen Sie zurück zu Schritt 1."
+        st.error(msg)
         if st.button("Zurück zu Schritt 1"):
             st.switch_page("pages/step1.py")
         return
@@ -62,7 +55,8 @@ async def main_async() -> None:
     # Chat input
     if prompt := st.chat_input("Ihre Frage..."):
         # Add user message to chat history
-        state.chat_messages.append(ChatMessage(content=prompt, role="user"))
+        chat_message = ChatMessage(content=prompt, role="user")
+        state.chat_messages.append(chat_message)
 
         # Display user message
         with st.chat_message("user"):
@@ -86,14 +80,8 @@ async def main_async() -> None:
                         full_prompt,
                         message_placeholder,
                     )
-
-                # Add assistant response to chat history
-                state.chat_messages.append(
-                    ChatMessage(
-                        content=full_response,
-                        role="assistant",
-                    )
-                )
+                msg = ChatMessage(content=full_response, role="assistant")
+                state.chat_messages.append(msg)
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
