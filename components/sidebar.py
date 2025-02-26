@@ -37,6 +37,7 @@ def render_agent_config(
         key_prefix="example",
         providers=["openrouter"],
         on_change=on_model_change,
+        initial_model=agent.model_name,
     )
 
     # System prompt
