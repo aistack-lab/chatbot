@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
+from llmling_agent import ChatMessage
 import streamlit as st
 
 from components.sidebar import render_sidebar
@@ -69,13 +70,13 @@ async def main_async() -> None:
         st.markdown(state.completed_form.format_context())
     # Display chat history
     for message in state.chat_messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        with st.chat_message(message.role):
+            st.markdown(message.content)
 
     # Chat input
     if prompt := st.chat_input("Ihre Frage..."):
         # Add user message to chat history
-        state.chat_messages.append({"role": "user", "content": prompt})
+        state.chat_messages.append(ChatMessage(content=prompt, role="user"))
 
         # Display user message
         with st.chat_message("user"):
@@ -95,10 +96,12 @@ async def main_async() -> None:
                     )
 
                 # Add assistant response to chat history
-                state.chat_messages.append({
-                    "role": "assistant",
-                    "content": full_response,
-                })
+                state.chat_messages.append(
+                    ChatMessage(
+                        content=full_response,
+                        role="assistant",
+                    )
+                )
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"

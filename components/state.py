@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from crewai_tools import SerperDevTool
-from llmling_agent import Agent, StructuredAgent, Tool
+from llmling_agent import Agent, ChatMessage, StructuredAgent, Tool
 import streamlit as st
 
 from config import FormData
@@ -22,8 +24,6 @@ Informationen zu strukturieren und zu analysieren.
 """
 
 MODEL_NAME = "gpt-4o-mini"
-
-type Message = dict[str, str]
 
 
 class State:
@@ -78,7 +78,7 @@ class State:
         st.session_state.form_data = value
 
     @property
-    def chat_messages(self) -> list[Message]:
+    def chat_messages(self) -> list[ChatMessage[Any]]:
         """Get the chat message history."""
         return st.session_state.chat_messages
 
