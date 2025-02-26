@@ -23,7 +23,7 @@ Du bist ein KI-Assistent der dabei hilft,
 Informationen zu strukturieren und zu analysieren.
 """
 
-MODEL_NAME = "gpt-4o-mini"
+MODEL_NAME = "openrouter:openai/gpt-4o-mini"
 CHAT_AGENT_NAME = "Dieter"
 FORM_AGENT_NAME = "Uschi"
 

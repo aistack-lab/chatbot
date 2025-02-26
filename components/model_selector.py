@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import streamlit as st
 
@@ -10,25 +10,25 @@ from utils import run
 
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Sequence
+    from collections.abc import Sequence
 
+    from llmling_agent_config.task import AnyAgent
     from tokonomics.model_discovery import ModelInfo, ProviderType
 
 
 def model_selector(
     *,
-    key_prefix: str = "model_selector",
+    agent: AnyAgent[Any, Any],
     providers: Sequence[ProviderType] | None = None,
-    on_change: Callable[[ModelInfo], None] | None = None,
-    initial_model: str | None = None,
 ) -> ModelInfo | None:
     """Render a model selector with provider and model dropdowns.
 
+    This component uses the agent's current model configuration and
+    updates the agent directly when selections change.
+
     Args:
-        key_prefix: Prefix for session state keys
+        agent: Agent object with set_model method and model_name attribute
         providers: List of providers to show models from
-        on_change: Optional callback when selection changes
-        initial_model: Model ID to select initially (matches pydantic_ai_id)
 
     Returns:
         Selected model info or None if not selected
@@ -41,23 +41,25 @@ def model_selector(
     # Get unique providers from models
     available_providers = sorted({model.provider for model in models})
 
-    # Determine initial provider based on initial_model if provided
-    initial_provider = None
-    if initial_model:
-        initial_model_info = next(
-            (m for m in models if m.pydantic_ai_id == initial_model),
+    # Get current model info to set initial selections
+    current_model_id = agent.model_name
+    current_model = None
+    current_provider = None
+
+    if current_model_id:
+        current_model = next(
+            (m for m in models if m.pydantic_ai_id == current_model_id),
             None,
         )
-        if initial_model_info:
-            initial_provider = initial_model_info.provider
+        if current_model:
+            current_provider = current_model.provider
 
     # Provider selection
-    provider_key = f"{key_prefix}_provider"
     if len(available_providers) > 1:
-        # Use initial provider if found, otherwise first provider
+        # Use current provider if found, otherwise first provider
         default_provider_idx = (
-            available_providers.index(initial_provider)
-            if initial_provider in available_providers
+            available_providers.index(current_provider)
+            if current_provider in available_providers
             else 0
         )
 
@@ -65,7 +67,6 @@ def model_selector(
             "Provider",
             options=available_providers,
             index=default_provider_idx,
-            key=provider_key,
         )
     else:
         selected_provider = available_providers[0]
@@ -76,26 +77,17 @@ def model_selector(
 
     # Determine initial model index
     default_model_idx = 0
-    if initial_model:
-        # Find model with matching pydantic_ai_id in current provider's models
-        matching_model = next(
-            (
-                idx
-                for idx, m in enumerate(provider_models)
-                if m.pydantic_ai_id == initial_model
-            ),
-            None,
-        )
-        if matching_model is not None:
-            default_model_idx = matching_model
+    if current_model and current_model.provider == selected_provider:
+        try:
+            default_model_idx = model_names.index(current_model.name)
+        except ValueError:
+            default_model_idx = 0
 
     # Model selection
-    model_key = f"{key_prefix}_model"
     selected_name = st.selectbox(
         "Model",
         options=model_names,
         index=default_model_idx,
-        key=model_key,
     )
 
     # Find selected model info
@@ -109,9 +101,9 @@ def model_selector(
         with st.expander("Model Details", expanded=True):
             st.markdown(selected_model.format())
 
-        # Call on_change callback if provided
-        if on_change:
-            on_change(selected_model)
+        # Update agent model if it changed
+        if selected_model.pydantic_ai_id != current_model_id:
+            agent.set_model(selected_model.pydantic_ai_id)
 
     return selected_model
 
