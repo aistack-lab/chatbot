@@ -30,18 +30,10 @@ async def process_chat_message(
     agent: Agent[None],
     prompt: str,
     message_placeholder: DeltaGenerator,
-    is_first_message: bool = False,
 ) -> str:
     """Process a chat message and stream the response."""
-    # Only add context for the first message
-    if is_first_message:
-        context = state.completed_form.format_context()
-        full_prompt = f"{context}\n\nFrage: {prompt}"
-    else:
-        full_prompt = prompt
-
     response_parts: list[str] = []
-    async with agent.run_stream(full_prompt) as stream:
+    async with agent.run_stream(prompt) as stream:
         async for chunk in stream.stream():
             message_placeholder.markdown(chunk)
             response_parts.append(chunk)
@@ -59,13 +51,10 @@ async def main_async() -> None:
         if st.button("Zurück zu Schritt 1"):
             st.switch_page("pages/step1.py")
         return
-
-    st.title("Schritt 2: Analyse und Dialog")
-
-    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
     await state.initialize()
+    st.title("Schritt 2: Analyse und Dialog")
+    render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
     chat_agent = state.chat_agent
-    # Display context
     with st.expander("Kontext aus Schritt 1", expanded=True):
         st.markdown(state.completed_form.format_context())
     # Display chat history
@@ -86,13 +75,19 @@ async def main_async() -> None:
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
 
+                # Prepare prompt with context for the first message
+                if len(state.chat_messages) <= 1:
+                    context = state.completed_form.format_context()
+                    full_prompt = f"{context}\n\nFrage: {prompt}"
+                else:
+                    full_prompt = prompt
+
                 # Stream the response
                 with st.spinner("Denke nach..."):
                     full_response = await process_chat_message(
                         chat_agent,
-                        prompt,
+                        full_prompt,
                         message_placeholder,
-                        is_first_message=len(state.chat_messages) <= 1,
                     )
 
                 # Add assistant response to chat history
