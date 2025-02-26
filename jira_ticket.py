@@ -199,36 +199,32 @@ def extract_jira_ticket(issue: jira.Issue) -> JiraTicket:
                 name=comment.author.name,
                 email_address=getattr(comment.author, "emailAddress", None),
             )
-
-            comments.append(
-                JiraComment(
-                    body=comment.body,
-                    author=comment_author,
-                    created=parse_jira_date(getattr(comment, "created", None)),
-                    updated=parse_jira_date(getattr(comment, "updated", None)),
-                )
+            comment = JiraComment(
+                body=comment.body,
+                author=comment_author,
+                created=parse_jira_date(getattr(comment, "created", None)),
+                updated=parse_jira_date(getattr(comment, "updated", None)),
             )
+            comments.append(comment)
 
     # Extract issue links
     issue_links = []
     if hasattr(fields, "issuelinks"):
         for link in fields.issuelinks:
             if hasattr(link, "outwardIssue"):
-                issue_links.append(
-                    JiraIssueLink(
-                        link_type=link.type.outward,
-                        issue_key=link.outwardIssue.key,
-                        direction="outward",
-                    )
+                link = JiraIssueLink(
+                    link_type=link.type.outward,
+                    issue_key=link.outwardIssue.key,
+                    direction="outward",
                 )
+                issue_links.append(link)
             elif hasattr(link, "inwardIssue"):
-                issue_links.append(
-                    JiraIssueLink(
-                        link_type=link.type.inward,
-                        issue_key=link.inwardIssue.key,
-                        direction="inward",
-                    )
+                link = JiraIssueLink(
+                    link_type=link.type.inward,
+                    issue_key=link.inwardIssue.key,
+                    direction="inward",
                 )
+                issue_links.append(link)
 
     # Create the ticket
     return JiraTicket(
