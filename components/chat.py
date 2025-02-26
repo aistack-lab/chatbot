@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from llmling_agent.messaging.messages import ChatMessage
 import streamlit as st
 
 
@@ -51,13 +52,15 @@ async def create_chat_ui(
 
     # Display chat history
     for message in st.session_state[messages_key]:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+        with st.chat_message(message.role):
+            st.markdown(message.content)
 
     # Chat input
     if prompt := st.chat_input(placeholder_text):
         # Add and display user message
-        st.session_state[messages_key].append({"role": "user", "content": prompt})
+        user_msg = ChatMessage(content=prompt, role="user")
+        st.session_state[messages_key].append(user_msg)
+
         with st.chat_message("user"):
             st.markdown(prompt)
 
@@ -67,25 +70,27 @@ async def create_chat_ui(
                 message_placeholder = st.empty()
 
                 # Preprocess first message if needed
+                processed_prompt = prompt
                 if (
                     not st.session_state[messages_key][:-1]
                     and preprocess_first_message is not None
                 ):
-                    prompt = preprocess_first_message(prompt)
+                    processed_prompt = preprocess_first_message(prompt)
 
                 # Stream the response
                 with st.spinner(thinking_text):
                     full_response = await _stream_response(
                         agent=agent,
-                        prompt=prompt,
+                        prompt=processed_prompt,
                         placeholder=message_placeholder,
                     )
 
                 # Add assistant response to history
-                st.session_state[messages_key].append({
-                    "role": "assistant",
-                    "content": full_response,
-                })
+                assistant_msg = ChatMessage(
+                    content=full_response,
+                    role="assistant",
+                )
+                st.session_state[messages_key].append(assistant_msg)
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
