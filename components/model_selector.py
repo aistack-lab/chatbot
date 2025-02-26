@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING
 
 import streamlit as st
-from tokonomics.model_discovery import ModelInfo, get_all_models
 
 from utils import run
 
@@ -14,7 +12,7 @@ from utils import run
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
 
-    from tokonomics.model_discovery import ProviderType
+    from tokonomics.model_discovery import ModelInfo, ProviderType
 
 
 def model_selector(
@@ -34,7 +32,9 @@ def model_selector(
         Selected model info or None if not selected
     """
     # Fetch models
-    models = asyncio.run(get_all_models(providers=providers))
+    from tokonomics.model_discovery import get_all_models_sync
+
+    models = get_all_models_sync(providers=providers)
 
     # Get unique providers from models
     available_providers = sorted({model.provider for model in models})
