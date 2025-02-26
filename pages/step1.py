@@ -10,11 +10,11 @@ import streamlit as st
 from components.sidebar import render_sidebar
 from components.state import state
 from config import FORM_FIELDS, FormData
+from utils import read_text_file
 
 
 if TYPE_CHECKING:
     from llmling_agent import StructuredAgent
-    from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 
 SYS_PROMPT = """\
@@ -25,15 +25,6 @@ und strukturiere sie entsprechend der Vorgaben.
 """
 
 MODEL_NAME = "gpt-4o-mini"
-
-
-def read_text_file(file: UploadedFile) -> str:
-    """Read text content from uploaded file."""
-    try:
-        return file.read().decode("utf-8")
-    except UnicodeDecodeError as e:
-        error_msg = "Datei konnte nicht als UTF-8 Text gelesen werden."
-        raise ValueError(error_msg) from e
 
 
 async def process_upload(
@@ -70,19 +61,15 @@ async def main_async() -> None:
 
     # Create form fields
     for field, label in FORM_FIELDS.items():
-        state.form_data[field] = st.text_area(
-            label, value=state.form_data[field], height=100
-        )
+        value = state.form_data[field]
+        state.form_data[field] = st.text_area(label, value=value, height=100)
 
     # Check if all fields are filled
     all_filled = all(bool(state.form_data[f].strip()) for f in FORM_FIELDS)
 
-    # Next button
     label = "Weiter zu Schritt 2"
     if st.button(label, disabled=not all_filled, use_container_width=True):
-        # Store the complete form data
         st.session_state.completed_form = FormData(**state.form_data)
-        # Navigate to next page
         st.switch_page("pages/step2.py")
 
 

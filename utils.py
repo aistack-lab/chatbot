@@ -14,6 +14,8 @@ from streamlit.web.cli import main
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine
 
+    from streamlit.runtime.uploaded_file_manager import UploadedFile
+
 
 T = TypeVar("T")
 
@@ -46,3 +48,12 @@ def run(
     else:
         sys.argv = ["streamlit", "run", sys.argv[0]]
         sys.exit(main())
+
+
+def read_text_file(file: UploadedFile) -> str:
+    """Read text content from uploaded file."""
+    try:
+        return file.read().decode("utf-8")
+    except UnicodeDecodeError as e:
+        error_msg = "Datei konnte nicht als UTF-8 Text gelesen werden."
+        raise ValueError(error_msg) from e
