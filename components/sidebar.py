@@ -6,10 +6,13 @@ from typing import TYPE_CHECKING, Any
 
 import streamlit as st
 
+from components.model_selector import model_selector
+
 
 if TYPE_CHECKING:
     from llmling_agent import Agent
     from streamlit.delta_generator import DeltaGenerator
+    from tokonomics.model_discovery import ModelInfo
 
 
 def render_sidebar(model_name: str, sys_prompt: str) -> None:
@@ -21,7 +24,15 @@ def render_sidebar(model_name: str, sys_prompt: str) -> None:
         if "model" not in st.session_state:
             st.session_state.model = model_name
 
-        st.session_state.model = st.text_input("Model", value=st.session_state.model)
+        def on_model_change(model: ModelInfo) -> None:
+            """Handle model selection changes."""
+            st.session_state.model = model.pydantic_ai_id
+
+        _selected = model_selector(
+            key_prefix="example",
+            providers=["openrouter"],
+            on_change=on_model_change,
+        )
 
         # System prompt
         if "system_prompt" not in st.session_state:

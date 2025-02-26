@@ -5,7 +5,9 @@ description = "Unser toller Chatbot!"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "llmling-agent[default]>=0.99.7",
+    "pydantic>=2.11.0a2",
+    "llmling>=1.6.14",
+    "llmling-agent[default]>=0.99.16",
     "streamlit>=1.42.0",
     "markitdown",
     "streamlit-pydantic",
