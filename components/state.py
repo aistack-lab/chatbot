@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Any
 
 from llmling_agent import Agent, AnyAgent, ChatMessage, StructuredAgent
@@ -60,8 +61,17 @@ class State:
         if "form_data" not in st.session_state:
             st.session_state.form_data = {field: "" for field in FormData.model_fields}
 
-        if "chat_messages" not in st.session_state:
-            st.session_state.chat_messages = []
+        if "messages" not in st.session_state:
+            st.session_state.messages = defaultdict(list)
+
+    @property
+    def messages(self) -> defaultdict[str, list[ChatMessage[Any]]]:
+        """Get all agent messages, indexed by agent name."""
+        return st.session_state.messages
+
+    def clear_agent_messages(self, agent_name: str) -> None:
+        """Clear messages for a specific agent."""
+        self.messages[agent_name] = []
 
     @property
     def agents(self) -> dict[str, AnyAgent[Any, Any]]:
@@ -90,8 +100,8 @@ class State:
 
     @property
     def chat_messages(self) -> list[ChatMessage[Any]]:
-        """Get the chat message history."""
-        return st.session_state.chat_messages
+        """Get the chat message history for the default chat agent."""
+        return self.messages[CHAT_AGENT_NAME]
 
     @property
     def completed_form(self) -> FormData:
