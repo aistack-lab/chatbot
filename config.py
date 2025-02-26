@@ -25,6 +25,17 @@ class FormData(BaseModel):
 
     model_config = ConfigDict(use_attribute_docstrings=True)
 
+    def format_context(self) -> str:
+        """Format the form data into a context string."""
+        return (
+            "Projektinformationen:\n\n"
+            f"Titel: {self.title}\n\n"
+            f"Beschreibung:\n{self.description}\n\n"
+            f"Anforderungen:\n{self.requirements}\n\n"
+            f"Einschränkungen:\n{self.constraints}\n\n"
+            f"Weitere Informationen:\n{self.additional_info}"
+        )
+
 
 # Field descriptions for the form - matches FormData fields
 FORM_FIELDS = {

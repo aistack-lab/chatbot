@@ -45,7 +45,7 @@ def render_sidebar(model_name: str, sys_prompt: str) -> None:
         )
 
 
-async def render_agent_config(
+def render_agent_config(
     agent: Agent[Any],
     container: DeltaGenerator | None = None,
 ) -> None:
@@ -61,7 +61,7 @@ async def render_agent_config(
     # Get or initialize config from session state
     state_key = f"agent_config_{agent.name}"
     if state_key not in st.session_state:
-        new = await agent.sys_prompts.format_system_prompt(agent)
+        new = agent.sys_prompts.prompts[0]
         st.session_state[state_key] = {"model": agent.model_name, "system_prompt": new}
 
     # Render configuration UI
@@ -78,11 +78,11 @@ async def render_agent_config(
     if new_prompt != config["system_prompt"]:
         config["system_prompt"] = new_prompt
         # Update system prompt correctly
-        agent.sys_prompts.clear()
+        agent.sys_prompts.prompts.clear()
         agent.sys_prompts.prompts.append(new_prompt or "")
 
 
-async def render_agent_sidebar(agent: Agent[Any]) -> None:
+def render_agent_sidebar(agent: Agent[Any]) -> None:
     """Render agent configuration in the sidebar.
 
     Args:
@@ -90,4 +90,4 @@ async def render_agent_sidebar(agent: Agent[Any]) -> None:
     """
     with st.sidebar:
         st.title("Konfiguration")
-        await render_agent_config(agent, st.sidebar)
+        render_agent_config(agent, st.sidebar)

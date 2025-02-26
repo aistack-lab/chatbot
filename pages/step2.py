@@ -5,17 +5,15 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from crewai_tools import SerperDevTool
-from llmling_agent import Agent, Tool
 import streamlit as st
 
 from components.sidebar import render_sidebar
+from components.state import state
 
 
 if TYPE_CHECKING:
+    from llmling_agent import Agent
     from streamlit.delta_generator import DeltaGenerator
-
-    from config import FormData
 
 
 SYSTEM_PROMPT = """\
@@ -27,18 +25,6 @@ MODEL_NAME = "gpt-4o-mini"
 AGENT_NAME = "agent"
 
 
-def format_context(form_data: FormData) -> str:
-    """Format the form data into a context string."""
-    return (
-        "Projektinformationen:\n\n"
-        f"Titel: {form_data.title}\n\n"
-        f"Beschreibung:\n{form_data.description}\n\n"
-        f"Anforderungen:\n{form_data.requirements}\n\n"
-        f"Einschränkungen:\n{form_data.constraints}\n\n"
-        f"Weitere Informationen:\n{form_data.additional_info}"
-    )
-
-
 async def process_chat_message(
     agent: Agent[None],
     prompt: str,
@@ -48,7 +34,7 @@ async def process_chat_message(
     """Process a chat message and stream the response."""
     # Only add context for the first message
     if is_first_message:
-        context = format_context(st.session_state.completed_form)
+        context = state.completed_form.format_context()
         full_prompt = f"{context}\n\nFrage: {prompt}"
     else:
         full_prompt = prompt
@@ -76,58 +62,40 @@ async def main_async() -> None:
     st.title("Schritt 2: Analyse und Dialog")
 
     render_sidebar(model_name=MODEL_NAME, sys_prompt=SYSTEM_PROMPT)
-
-    # Initialize agent if not already done
-    if AGENT_NAME not in st.session_state:
-        agent = Agent[None](
-            name=AGENT_NAME,
-            model=st.session_state.model,
-            system_prompt=st.session_state.system_prompt,
-        )
-        await agent.__aenter__()
-        search_tool = SerperDevTool()
-        agent.tools.register_tool(Tool.from_crewai_tool(search_tool))
-        st.session_state[AGENT_NAME] = agent
-    else:
-        agent = st.session_state[AGENT_NAME]
-    # Display form data as context
+    await state.initialize()
+    chat_agent = state.chat_agent
+    # Display context
     with st.expander("Kontext aus Schritt 1", expanded=True):
-        st.markdown(format_context(st.session_state.completed_form))
-
-    # Chat interface
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
+        st.markdown(state.completed_form.format_context())
     # Display chat history
-    for message in st.session_state.messages:
+    for message in state.chat_messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
     # Chat input
     if prompt := st.chat_input("Ihre Frage..."):
         # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt})
+        state.chat_messages.append({"role": "user", "content": prompt})
 
         # Display user message
         with st.chat_message("user"):
             st.markdown(prompt)
 
         try:
-            # Get response from agent
             with st.chat_message("assistant"):
                 message_placeholder = st.empty()
 
                 # Stream the response
                 with st.spinner("Denke nach..."):
                     full_response = await process_chat_message(
-                        st.session_state[AGENT_NAME],
+                        chat_agent,
                         prompt,
                         message_placeholder,
-                        is_first_message=len(st.session_state.messages) <= 1,
+                        is_first_message=len(state.chat_messages) <= 1,
                     )
 
                 # Add assistant response to chat history
-                st.session_state.messages.append({
+                state.chat_messages.append({
                     "role": "assistant",
                     "content": full_response,
                 })

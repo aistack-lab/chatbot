@@ -5,14 +5,15 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from llmling_agent import Agent, StructuredAgent
 import streamlit as st
 
 from components.sidebar import render_sidebar
+from components.state import state
 from config import FORM_FIELDS, FormData
 
 
 if TYPE_CHECKING:
+    from llmling_agent import StructuredAgent
     from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 
@@ -24,7 +25,6 @@ und strukturiere sie entsprechend der Vorgaben.
 """
 
 MODEL_NAME = "gpt-4o-mini"
-AGENT_NAME = "structured_agent"
 
 
 def read_text_file(file: UploadedFile) -> str:
@@ -48,22 +48,10 @@ async def process_upload(
 async def main_async() -> None:
     """Async main function for Step 1."""
     # Initialize form data in session state
-    if "form_data" not in st.session_state:
-        st.session_state.form_data = {field: "" for field in FORM_FIELDS}
-
-    # Initialize agent
-    if AGENT_NAME not in st.session_state:
-        agent = Agent[None](
-            name=AGENT_NAME,
-            model=st.session_state.model,
-            system_prompt=st.session_state.system_prompt,
-        )
-        await agent.__aenter__()
-        st.session_state[AGENT_NAME] = agent.to_structured(FormData)
+    await state.initialize()
+    agent = state.form_agent
     st.title("Schritt 1: Informationssammlung")
-
     render_sidebar(model_name=MODEL_NAME, sys_prompt=SYS_PROMPT)
-
     # File upload section
     help_text = "Laden Sie eine UTF-8 kodierte Textdatei hoch"
     uploaded_file = st.file_uploader("Text-Datei hochladen", type=["txt"], help=help_text)
@@ -72,12 +60,9 @@ async def main_async() -> None:
         try:
             content = read_text_file(uploaded_file)
             with st.spinner("Verarbeite Upload..."):
-                result = await process_upload(
-                    st.session_state[AGENT_NAME],
-                    content,
-                )
+                result = await process_upload(agent, content)
                 # Update form data with results
-                st.session_state.form_data = result.model_dump()
+                state.form_data = result.model_dump()
                 st.success("Datei erfolgreich verarbeitet!")
         except Exception as e:  # noqa: BLE001
             error_msg = f"Fehler beim Verarbeiten der Datei: {e!s}"
@@ -85,18 +70,18 @@ async def main_async() -> None:
 
     # Create form fields
     for field, label in FORM_FIELDS.items():
-        st.session_state.form_data[field] = st.text_area(
-            label, value=st.session_state.form_data[field], height=100
+        state.form_data[field] = st.text_area(
+            label, value=state.form_data[field], height=100
         )
 
     # Check if all fields are filled
-    all_filled = all(bool(st.session_state.form_data[f].strip()) for f in FORM_FIELDS)
+    all_filled = all(bool(state.form_data[f].strip()) for f in FORM_FIELDS)
 
     # Next button
     label = "Weiter zu Schritt 2"
     if st.button(label, disabled=not all_filled, use_container_width=True):
         # Store the complete form data
-        st.session_state.completed_form = FormData(**st.session_state.form_data)
+        st.session_state.completed_form = FormData(**state.form_data)
         # Navigate to next page
         st.switch_page("pages/step2.py")
 
