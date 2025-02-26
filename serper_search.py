@@ -12,10 +12,6 @@ from typing import Any, Literal
 import httpx
 
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
 
 
@@ -70,19 +66,12 @@ class SerperTool:
         # Make API request
         search_url = f"{self.base_url}/{search_type}"
         assert self.api_key, "API key is required"
-        headers = {
-            "X-API-KEY": self.api_key,
-            "Content-Type": "application/json",
-        }
+        headers = {"X-API-KEY": self.api_key, "Content-Type": "application/json"}
         payload = {"q": query, "num": self.n_results}
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             try:
-                response = await client.post(
-                    search_url,
-                    headers=headers,
-                    json=payload,
-                )
+                response = await client.post(search_url, headers=headers, json=payload)
                 response.raise_for_status()
                 results = response.json()
             except httpx.HTTPError as e:
@@ -113,13 +102,10 @@ class SerperTool:
             Processed results dictionary
         """
         # Add search parameters to results
-        processed = {
-            "searchParameters": {
-                "query": results.get("searchParameters", {}).get("q", ""),
-                "type": search_type,
-            },
-            "credits": results.get("credits", 1),
-        }
+        query = results.get("searchParameters", {}).get("q", "")
+        params = {"query": query, "type": search_type}
+        credit = results.get("credits", 1)
+        processed = {"searchParameters": params, "credits": credit}
 
         # Process different result types
         if search_type == "search":
@@ -308,7 +294,7 @@ async def example():
     """Example usage of SerperTool."""
     tool = SerperTool()
     results = await tool.search("Python programming")
-    print(json.dumps(results, indent=2))
+    print(results)
 
 
 if __name__ == "__main__":
