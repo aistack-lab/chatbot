@@ -65,7 +65,7 @@ def chatmessage_view(
     for msg in messages:
         role = "user" if msg.role == "user" else "assistant"
         with st_container.chat_message(role):
-            render_message_content(msg, st_container)
+            render_message_content(msg, st_container)  # type: ignore
 
 
 if __name__ == "__main__":
