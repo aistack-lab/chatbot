@@ -33,7 +33,7 @@ def render_agent_config(
         """Handle model selection changes."""
         agent.set_model(model.pydantic_ai_id)
 
-    _selected = model_selector(agent=agent, providers=["openrouter"])
+    _selected = model_selector(agent=agent, providers=["openrouter"], expanded=False)
 
     # System prompt
     sys_prompt = agent.sys_prompts.prompts[0] if agent.sys_prompts.prompts else ""

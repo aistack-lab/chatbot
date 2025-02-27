@@ -20,6 +20,7 @@ def model_selector(
     *,
     agent: AnyAgent[Any, Any],
     providers: Sequence[ProviderType] | None = None,
+    expanded: bool = True,
 ) -> ModelInfo | None:
     """Render a model selector with provider and model dropdowns.
 
@@ -29,6 +30,7 @@ def model_selector(
     Args:
         agent: Agent object with set_model method and model_name attribute
         providers: List of providers to show models from
+        expanded: Whether to expand the model details by default
 
     Returns:
         Selected model info or None if not selected
@@ -98,7 +100,7 @@ def model_selector(
 
     # Show model details in expander
     if selected_model:
-        with st.expander("Model Details", expanded=True):
+        with st.expander("Model Details", expanded=expanded):
             st.markdown(selected_model.format())
 
         # Update agent model if it changed
