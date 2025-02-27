@@ -1,70 +1,67 @@
-"""First step of the workflow - Information gathering."""
+"""Main chat interface for the EU-AI Act Analysis Tool."""
 
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
 
+from llmling_agent import ChatMessage
 import streamlit as st
 
 from components.sidebar import render_agent_sidebar
 from components.state import state
-from config import FORM_FIELDS, FormData
-from utils import read_text_file
-
-
-if TYPE_CHECKING:
-    from llmling_agent import MessageNode
-
-
-async def process_upload(
-    agent: MessageNode[None, FormData],
-    content: str,
-) -> FormData:
-    """Process uploaded content through the agent."""
-    result = await agent.run(content)
-    return result.content
 
 
 async def main_async() -> None:
-    """Async main function for Step 1."""
-    # Initialize form data in session state
+    """Async main function for the chat interface."""
+    # Action buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Ticket erstellen", use_container_width=True):
+            st.switch_page("pages/step2.py")
+
+    with col2:
+        if st.button("Neue Unterhaltung", use_container_width=True):
+            # Clear chat history for now (NOOP otherwise)
+            state.clear_agent_messages(state.chat_agent.name)
+            st.rerun()  # Refresh the page to show empty chat
+
     await state.initialize()
-    agent = state.form_agent
-    st.title("Schritt 1: Informationssammlung")
-    render_agent_sidebar(agent)
-    # File upload section
-    help_text = "Laden Sie eine UTF-8 kodierte Textdatei hoch"
-    uploaded_file = st.file_uploader("Text-Datei hochladen", type=["txt"], help=help_text)
+    st.title("🤖 EU-AI Act Analyse Tool - Chat")
 
-    if uploaded_file is not None:
+    # Configure the chat agent
+    chat_agent = state.chat_agent
+    render_agent_sidebar(chat_agent)
+
+    # Display chat history
+    for message in state.chat_messages:
+        with st.chat_message(message.role):
+            st.markdown(message.content)
+
+    # Chat input
+    if prompt := st.chat_input("Ihre Frage..."):
+        # Add user message to chat history
+        chat_message = ChatMessage(content=prompt, role="user")
+        state.chat_messages.append(chat_message)
+
+        # Display user message
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
         try:
-            content = read_text_file(uploaded_file)
-            with st.spinner("Verarbeite Upload..."):
-                result = await process_upload(agent, content)
-                # Update form data with results
-                state.form_data = result.model_dump()
-                st.success("Datei erfolgreich verarbeitet!")
+            with st.chat_message("assistant"):
+                # Stream the response
+                with st.spinner("Denke nach..."):
+                    full_response = await chat_agent.run(prompt)
+                    st.markdown(full_response.content)
+                state.chat_messages.append(full_response)
+
         except Exception as e:  # noqa: BLE001
-            error_msg = f"Fehler beim Verarbeiten der Datei: {e!s}"
+            error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
             st.error(error_msg)
-
-    # Create form fields
-    for field, label in FORM_FIELDS.items():
-        value = state.form_data[field]
-        state.form_data[field] = st.text_area(label, value=value, height=100)
-
-    # Check if all fields are filled
-    all_filled = all(bool(state.form_data[f].strip()) for f in FORM_FIELDS)
-
-    label = "Weiter zu Schritt 2"
-    if st.button(label, disabled=not all_filled, use_container_width=True):
-        st.session_state.completed_form = FormData(**state.form_data)
-        st.switch_page("pages/step2.py")
 
 
 def main() -> None:
-    """Main entry point for Step 1."""
+    """Main entry point for the chat interface."""
     asyncio.run(main_async())
 
 

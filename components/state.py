@@ -11,16 +11,14 @@ import streamlit as st
 from config import FormData
 
 
-SYS_PROMPT_STEP1 = """\
-Du bist ein KI-Assistent der dabei hilft,
-Informationen zu strukturieren und zu analysieren.
-Extrahiere die relevanten Informationen aus dem Text
-und strukturiere sie entsprechend der Vorgaben.
+CHAT_AGENT_SYS_PROMPT = """\
+Du bist Uschi. Dein Umgangston ist sehr ruppig. Du bist dafür verantwortlich, möglichst unfreundlich
+dem User beim Bewältigen seiner Aufgaben zu helfen.
 """
 
-SYS_PROMPT_STEP2 = """\
-Du bist ein KI-Assistent der dabei hilft,
-Informationen zu strukturieren und zu analysieren.
+TICKET_CREATOR_SYS_PROMPT = """\
+Du bist verantwortllich, Tickets im Jira-TicketSystem zu erstellen.
+Extrahiere Informationen aus dem dir gegebenen Chatverlauf.
 """
 
 MODEL_NAME = "openrouter:openai/gpt-4o-mini"
@@ -38,7 +36,7 @@ class State:
             form_agent: StructuredAgent[None, FormData] = Agent(
                 name=FORM_AGENT_NAME,
                 model=MODEL_NAME,
-                system_prompt=SYS_PROMPT_STEP1,
+                system_prompt=CHAT_AGENT_SYS_PROMPT,
                 session=False,
             ).to_structured(FormData)
             await form_agent.__aenter__()
@@ -47,7 +45,7 @@ class State:
             chat_agent = Agent[None](
                 name=CHAT_AGENT_NAME,
                 model=MODEL_NAME,
-                system_prompt=SYS_PROMPT_STEP2,
+                system_prompt=TICKET_CREATOR_SYS_PROMPT,
                 session=False,
             )
             await chat_agent.__aenter__()

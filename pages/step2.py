@@ -1,68 +1,95 @@
-"""Second step of the workflow - Analysis and Chat."""
+"""Ticket creation interface for the EU-AI Act Analysis Tool."""
 
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
-from llmling_agent import ChatMessage
 import streamlit as st
 
+from components.primitives import render_model_form
 from components.sidebar import render_agent_sidebar
 from components.state import state
 
 
+if TYPE_CHECKING:
+    from llmling_agent import ChatMessage, StructuredAgent
+
+    from config import FormData
+
+
+async def process_chat_history(
+    agent: StructuredAgent[None, FormData],
+    chat_messages: list[ChatMessage],
+) -> FormData:
+    """Process the chat history and create a ticket summary."""
+    # Format chat history into a single text
+    chat_text = "\n\n".join(f"{msg.role.upper()}: {msg.content}" for msg in chat_messages)
+
+    # Add instructions for ticket creation
+    prompt = (
+        "Based on the following chat conversation, create a ticket for our ticket system. "
+        "Extract relevant information like the issue, priority, and any important details. "
+        f"\n\nCHAT HISTORY:\n{chat_text}\n\n"
+        "Please create a structured ticket with appropriate fields."
+    )
+
+    # Process with the agent
+    result = await agent.run(prompt)
+    return result.content  # This is a FormData instance
+
+
 async def main_async() -> None:
-    """Async main function for Step 2."""
-    # Check if we have form data
-    if "completed_form" not in st.session_state:
-        msg = "Keine Daten von Schritt 1 vorhanden. Bitte gehen Sie zurück zu Schritt 1."
-        st.error(msg)
-        if st.button("Zurück zu Schritt 1"):
+    """Async main function for the ticket creation interface."""
+    await state.initialize()
+    st.title("🎫 EU-AI Act Analyse Tool - Ticket erstellen")
+
+    # Configure the agent
+    ticket_creator = state.form_agent
+    render_agent_sidebar(ticket_creator)
+
+    # Get chat history from the chat agent
+    chat_messages = state.chat_messages
+
+    if not chat_messages:
+        st.warning(
+            "Keine Chat-Nachrichten gefunden. Bitte führen Sie zuerst eine Unterhaltung."
+        )
+        if st.button("Zurück zum Chat", use_container_width=True):
             st.switch_page("pages/step1.py")
         return
-    await state.initialize()
-    st.title("Schritt 2: Analyse und Dialog")
-    chat_agent = state.chat_agent
-    render_agent_sidebar(chat_agent)
-    with st.expander("Kontext aus Schritt 1", expanded=True):
-        st.markdown(state.completed_form.format_context())
-    # Display chat history
-    for message in state.chat_messages:
-        with st.chat_message(message.role):
-            st.markdown(message.content)
 
-    # Chat input
-    if prompt := st.chat_input("Ihre Frage..."):
-        # Add user message to chat history
-        chat_message = ChatMessage(content=prompt, role="user")
-        state.chat_messages.append(chat_message)
+    # Create ticket based on chat history
+    with st.spinner("Ticket wird erstellt..."):
+        ticket_data = await process_chat_history(ticket_creator, chat_messages)
 
-        # Display user message
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    # Display and edit the form
+    st.subheader("Generiertes Ticket")
+    updated_ticket = render_model_form(ticket_data)
 
-        try:
-            with st.chat_message("assistant"):
-                # Prepare prompt with context for the first message
-                if len(state.chat_messages) <= 1:
-                    context = state.completed_form.format_context()
-                    full_prompt = f"{context}\n\nFrage: {prompt}"
-                else:
-                    full_prompt = prompt
+    # Download option (convert to text for download)
+    ticket_text = (
+        f"Title: {updated_ticket.title}\n\n"
+        f"Description: {updated_ticket.description}\n\n"
+        f"Requirements: {updated_ticket.requirements}\n\n"
+        f"Constraints: {updated_ticket.constraints}\n\n"
+        f"Additional Info: {updated_ticket.additional_info}"
+    )
 
-                # Stream the response
-                with st.spinner("Denke nach..."):
-                    full_response = await chat_agent.run(full_prompt)
-                    st.markdown(full_response.content)
-                state.chat_messages.append(full_response)
+    st.download_button(
+        label="Ticket als Text herunterladen",
+        data=ticket_text,
+        file_name="ticket.txt",
+        mime="text/plain",
+    )
 
-        except Exception as e:  # noqa: BLE001
-            error_msg = f"Ein Fehler ist aufgetreten: {e!s}"
-            st.error(error_msg)
+    # Back button
+    if st.button("Zurück zum Chat", use_container_width=True):
+        st.switch_page("pages/step1.py")
 
 
 def main() -> None:
-    """Main entry point for Step 2."""
+    """Main entry point for the ticket creation interface."""
     asyncio.run(main_async())
 
 

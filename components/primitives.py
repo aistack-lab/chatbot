@@ -7,9 +7,10 @@ import contextlib
 from datetime import date, datetime, time
 from decimal import Decimal
 from enum import Enum
-from typing import Any, Literal, TypeVar, get_args, get_origin
+from typing import Any, Literal, TypeVar, get_args, get_origin, overload
 
 import fieldz
+from pydantic import BaseModel
 import streamlit as st
 
 
@@ -1000,10 +1001,20 @@ def render_model_field(model_class, field_name, value=None):
     )
 
 
+TForm = TypeVar("TForm", bound=BaseModel)
+
+
+@overload
 def render_model_form(
-    model_or_instance: BaseModel | type[BaseModel],
-    readonly: bool = False,
-):
+    model_or_instance: type[TForm], *, readonly: bool = False
+) -> TForm: ...
+
+
+@overload
+def render_model_form(model_or_instance: TForm, *, readonly: bool = False) -> TForm: ...
+
+
+def render_model_form(model_or_instance, *, readonly: bool = False) -> Any:
     """Render a complete form for a model class or instance.
 
     Args:
