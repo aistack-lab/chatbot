@@ -60,11 +60,17 @@ class State:
 
         if "messages" not in st.session_state:
             st.session_state.messages = defaultdict(list)
+        if "agent_tools" not in st.session_state:
+            st.session_state.agent_tools = defaultdict(list)
 
     @property
     def messages(self) -> defaultdict[str, list[ChatMessage[Any]]]:
         """Get all agent messages, indexed by agent name."""
         return st.session_state.messages
+
+    @property
+    def agent_tools(self):
+        return st.session_state.agent_tools
 
     def clear_agent_messages(self, agent_name: str) -> None:
         """Clear messages for a specific agent."""
