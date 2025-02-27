@@ -3,12 +3,18 @@
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 from llmling_agent import ChatMessage
 import streamlit as st
 
+from components.chat_view import render_tool_call
 from components.sidebar import render_agent_sidebar
 from components.state import state
+
+
+if TYPE_CHECKING:
+    from llmling_agent.tools.tool_call_info import ToolCallInfo
 
 
 async def main_async() -> None:
@@ -36,6 +42,8 @@ async def main_async() -> None:
     for message in state.chat_messages:
         with st.chat_message(message.role):
             st.markdown(message.content)
+            for tool_call in message.tool_calls:
+                render_tool_call(st, tool_call)
 
     # Chat input
     if prompt := st.chat_input("Ihre Frage..."):
@@ -51,8 +59,14 @@ async def main_async() -> None:
             with st.chat_message("assistant"):
                 # Stream the response
                 with st.spinner("Denke nach..."):
+
+                    def render(call: ToolCallInfo):
+                        render_tool_call(st, call)
+
+                    chat_agent.tool_used.connect(render)
                     full_response = await chat_agent.run(prompt)
                     st.markdown(full_response.content)
+                    chat_agent.tool_used.disconnect(render)
                 state.chat_messages.append(full_response)
 
         except Exception as e:  # noqa: BLE001

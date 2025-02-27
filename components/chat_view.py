@@ -9,10 +9,12 @@ import streamlit as st
 
 
 if TYPE_CHECKING:
+    import types
+
     from streamlit.delta_generator import DeltaGenerator
 
 
-def render_tool_call(container: DeltaGenerator, tool_call):
+def render_tool_call(container: DeltaGenerator | types.ModuleType, tool_call):
     """Render a tool call in an expander."""
     with container.expander(f"🛠️ Tool: {tool_call.tool_name}", expanded=False):
         st.markdown("**Arguments:**")
