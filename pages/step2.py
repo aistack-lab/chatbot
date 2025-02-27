@@ -3,33 +3,12 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
 
 from llmling_agent import ChatMessage
 import streamlit as st
 
 from components.sidebar import render_agent_sidebar
 from components.state import state
-
-
-if TYPE_CHECKING:
-    from llmling_agent import Agent
-    from streamlit.delta_generator import DeltaGenerator
-
-
-async def process_chat_message(
-    agent: Agent[None],
-    prompt: str,
-    message_placeholder: DeltaGenerator,
-) -> str:
-    """Process a chat message and stream the response."""
-    response_parts: list[str] = []
-    async with agent.run_stream(prompt) as stream:
-        async for chunk in stream.stream():
-            message_placeholder.markdown(chunk)
-            response_parts.append(chunk)
-
-    return "".join(response_parts)
 
 
 async def main_async() -> None:
@@ -64,8 +43,6 @@ async def main_async() -> None:
 
         try:
             with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-
                 # Prepare prompt with context for the first message
                 if len(state.chat_messages) <= 1:
                     context = state.completed_form.format_context()
@@ -75,13 +52,9 @@ async def main_async() -> None:
 
                 # Stream the response
                 with st.spinner("Denke nach..."):
-                    full_response = await process_chat_message(
-                        chat_agent,
-                        full_prompt,
-                        message_placeholder,
-                    )
-                msg = ChatMessage(content=full_response, role="assistant")
-                state.chat_messages.append(msg)
+                    full_response = await chat_agent.run(full_prompt)
+                    st.markdown(full_response.content)
+                state.chat_messages.append(full_response)
 
         except Exception as e:  # noqa: BLE001
             error_msg = f"Ein Fehler ist aufgetreten: {e!s}"

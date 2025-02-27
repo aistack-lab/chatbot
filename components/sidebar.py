@@ -35,6 +35,9 @@ def render_agent_config(
 
     _selected = model_selector(agent=agent, providers=["openrouter"], expanded=False)
 
+    # Add tool selector
+    render_tool_selector(agent)
+
     # System prompt
     sys_prompt = agent.sys_prompts.prompts[0] if agent.sys_prompts.prompts else ""
     new_prompt = st_container.text_area("System Prompt", value=str(sys_prompt))
