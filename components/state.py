@@ -35,10 +35,11 @@ class State:
         """Initialize all agents."""
         if "agents" not in st.session_state:
             # Initialize form agent
-            form_agent = Agent[None](
+            form_agent: StructuredAgent[None, FormData] = Agent(
                 name=FORM_AGENT_NAME,
                 model=MODEL_NAME,
                 system_prompt=SYS_PROMPT_STEP1,
+                session=False,
             ).to_structured(FormData)
             await form_agent.__aenter__()
 
@@ -47,6 +48,7 @@ class State:
                 name=CHAT_AGENT_NAME,
                 model=MODEL_NAME,
                 system_prompt=SYS_PROMPT_STEP2,
+                session=False,
             )
             await chat_agent.__aenter__()
 
