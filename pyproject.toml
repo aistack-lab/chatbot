@@ -12,6 +12,7 @@ dependencies = [
     "markitdown",
     "streamlit-pydantic",
     "jira",
+    "o365",
 ]
 [dependency-groups]
 dev = [
