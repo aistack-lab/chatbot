@@ -1000,10 +1000,28 @@ def render_model_field(model_class, field_name, value=None):
     )
 
 
-def render_model_form(model_class, instance=None, readonly=False):
-    """Render a complete form for a model class using fieldz."""
-    instance = instance or model_class()
+def render_model_form(
+    model_or_instance: BaseModel | type[BaseModel],
+    readonly: bool = False,
+):
+    """Render a complete form for a model class or instance.
 
+    Args:
+        model_or_instance: Either a model class or an instance of it
+        readonly: Whether to render in read-only mode
+
+    Returns:
+        An instance of the model with updated values
+    """
+    # Determine if we have a class or an instance
+    if isinstance(model_or_instance, type):
+        # We received a class
+        model_class = model_or_instance
+        instance = model_class()  # Create a default instance
+    else:
+        # We received an instance
+        instance = model_or_instance
+        model_class = instance.__class__
     if readonly:
         render_model_readonly(model_class, instance)
         return instance  # No changes in read-only mode
