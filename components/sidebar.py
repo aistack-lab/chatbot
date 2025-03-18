@@ -65,7 +65,8 @@ def render_tool_selector(agent: AnyAgent[Any, Any]) -> None:
     Args:
         agent: The agent for which to configure tools
     """
-    from components.multi_select import MultiSelectItem, managed_multiselect
+    from streambricks import MultiSelectItem, multiselect
+
     from components.state import state
     from config import create_issue_tool, search_jira_tool, search_tool
 
@@ -87,22 +88,14 @@ def render_tool_selector(agent: AnyAgent[Any, Any]) -> None:
             description="Create a new issue in Jira",
         ),
     ]
-
-    # Use managed_multiselect for tool selection
-    selected_items = managed_multiselect(
+    selected_items = multiselect(
         "Available Tools",
         available_tools,
         state_key=f"tools_{agent.name}",
         help_text="Select tools the agent can use",
     )
-
-    # Get the actual Tool objects from selected items
     selected_tools = [item.value for item in selected_items]
-
-    # Store in state
     state.agent_tools[agent.name] = selected_tools
-
-    # Update agent's tools
     agent.tools.clear()  # Remove all existing tools
     for tool in selected_tools:
         agent.tools.register_tool(tool)

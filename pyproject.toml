@@ -13,6 +13,7 @@ dependencies = [
     "streamlit-pydantic",
     "jira",
     "o365",
+    "streambricks>=0.0.1",
 ]
 [dependency-groups]
 dev = [

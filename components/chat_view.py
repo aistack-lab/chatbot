@@ -22,7 +22,7 @@ def render_tool_call(container: DeltaGenerator | types.ModuleType, tool_call):
             st.markdown(f"- `{name}`: {value}")
         if tool_call.result:
             st.markdown("**Result:**")
-            st.markdown(f"```\n{tool_call.result}\n```")
+            st.markdown(f"\n{tool_call.result}\n")
         if tool_call.error:
             st.error(f"Error: {tool_call.error}")
         if tool_call.timing:
