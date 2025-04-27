@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import streambricks as sb
 import streamlit as st
-
-from components.model_selector import model_selector
 
 
 if TYPE_CHECKING:
@@ -33,7 +32,14 @@ def render_agent_config(
         """Handle model selection changes."""
         agent.set_model(model.pydantic_ai_id)
 
-    _selected = model_selector(agent=agent, providers=["openrouter"], expanded=False)
+    if (
+        selected_model := sb.model_selector(
+            value=agent.model_name,
+            providers=["openrouter"],
+            expanded=False,
+        )
+    ) and selected_model.pydantic_ai_id != selected_model:
+        agent.set_model(selected_model.pydantic_ai_id)
 
     # Add tool selector
     render_tool_selector(agent)
