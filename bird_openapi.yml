@@ -1,0 +1,2388 @@
+openapi: 3.0.3
+info:
+  title: BIRD API
+  description: OpenAPI document for BIRD API
+  version: 2.0.0
+servers:
+  - url: https://bird.ecb.europa.eu/api/v2
+tags:
+  - name: Simplified endpoints
+    description: The following endpoints are defined based on a simplified and more intuitive nested structure which does not require and extensive knowledge of the SMCube methodology (i.e. the methodology defining the Single Data Dictionary Information model)
+paths:
+  /entities:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint enables you to retrieve the information about an entity and its structure. An Entity is the metadata definition of a certain table, template. In the SMCube methodology this corresponds to a Cube.
+      operationId: findEntities
+      parameters:
+        - $ref: '#/components/parameters/codes'
+        - $ref: '#/components/parameters/businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdEntity'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdEntity'
+  /attributes:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve information about an attribute (which can be an attribute of an Entity) and its whole set of values. In the SMCube methodology this is defined as a Variable.
+      operationId: findAttributes
+      parameters:
+        - $ref: '#/components/parameters/attributeSpecificParams_codes'
+        - $ref: '#/components/parameters/attributeSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttribute'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttribute'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttribute'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttribute'
+  /valueCombinations:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint enables you to retrieve the information about a combination of values an entity can assume. This corresponds to either a data point or a series key. In the SMCube methodology this is defined as a Combination object.
+      operationId: findCombinations
+      parameters:
+        - $ref: '#/components/parameters/valueCombinationSpecificParams_codes'
+        - $ref: '#/components/parameters/valueCombinationSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdValueCombination'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdValueCombination'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdValueCombination'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdValueCombination'
+  /attributeRelatedEntities:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint enables you to retrieve all the Entities which include a certain variable/attribute as part of its structure definition. The user should include the code(s) or ids of the attribute/variables to get the related entities. Passing no code or ids will return all the available entities.
+      operationId: findAttributeRelatedEntities
+      parameters:
+        - $ref: '#/components/parameters/attributeRelatedEntitySpecificParams_codes'
+        - $ref: '#/components/parameters/attributeRelatedEntitySpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedEntity'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedEntity'
+  /dataModels:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint enables you to retrieve all the most relevant information about a data model. A data model is composed of entities organised in a hierarchical structure; such structure can reflect the business logic of data and its relationship. The API retuens such hierarchical structure organised in nodes. It also returns the relationships between the entities of the data model. In the SMCube methodology this is defined by a Cube Hierarchy object.
+      operationId: findDataModels
+      parameters:
+        - $ref: '#/components/parameters/dataModelSpecificParams_codes'
+        - $ref: '#/components/parameters/dataModelSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdDataModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdDataModel'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdDataModel'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdDataModel'
+  /mappings:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve the mappings between a set of non-reference Variables and a set of Reference Variables including the reated values. Reference Variables and related values that are those belonging to the harmonised dictionary of the SDD. In the SMCube methodology this is defined as a Mapping Definition object. <br><br>This endpoint can be used, for example, for meta-data linage between the DPM codification system and the reference dictionary of the SDD (which is the native language/dictionary of the BIRD).
+      operationId: findMappings
+      parameters:
+        - $ref: '#/components/parameters/mappingSpecificParams_codes'
+        - $ref: '#/components/parameters/mappingSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdMapping'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdMapping'
+  /entityRelatedEntityMappings:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve the Entity Mapping(s) related to a certain Entity which describe how to translate  the attributes and allowed values of an Entity from one dictionary (codification system) to another. The Entity (e.g. CODE) provided as input parameter can either  be the source or the destination of such Entity Mappings. In the SMCube methodology an Entity Mapping is defined as a Cube Mapping object.
+      operationId: findEntityRelatedEntityMappings
+      parameters:
+        - $ref: '#/components/parameters/entityRelatedEntityMappingSpecificParams_codes'
+        - $ref: '#/components/parameters/entityRelatedEntityMappingSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdEntityRelatedEntityMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdEntityRelatedEntityMapping'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdEntityRelatedEntityMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdEntityRelatedEntityMapping'
+  /attributeRelatedAttributeMappings:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve the Attribute Mapping(s) related to a certain Attribute describing how to translate it and its allowed values from one dictionary (codification system) to another. The Attribute (e.g. CODE) provided as input parameter can either be the source or the destination of such Attribute Mappings. In the SMCube methodology an Attribute Mapping is defined as a Variable Mapping object.
+      operationId: findAttributeRelatedAttributeMappings
+      parameters:
+        - $ref: '#/components/parameters/attributeRelatedAttributeMappingSpecificParams_codes'
+        - $ref: '#/components/parameters/attributeRelatedAttributeMappingSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/validate'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedAttributeMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedAttributeMapping'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedAttributeMapping'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAttributeRelatedAttributeMapping'
+  /allowedValues:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve information about an allowed value.  In the SMCube methodology this is defined as a Member.
+      operationId: findAllowedValues
+      parameters:
+        - $ref: '#/components/parameters/allowedValueSpecificParams_codes'
+        - $ref: '#/components/parameters/allowedValueSpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValue'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValue'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValue'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValue'
+  /allowedValueRelatedEntities:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint enables you to retrieve all the entities which include a certain allowed value (value) as part of its structure definition.  The user should include the id(s) of the allowed value to get the related entities. To be noted that in this case using the code to pre-filter the result is not  ideal as many allowed values belonging to different domains can have the same code. An allowed value id is normally the concatenation of the domain id and the value  code, separated by an underscore.
+      operationId: findAllowedValueRelatedEntities
+      parameters:
+        - $ref: '#/components/parameters/allowedValueRelatedEntitySpecificParams_codes'
+        - $ref: '#/components/parameters/allowedValueRelatedEntitySpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueRelatedEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueRelatedEntity'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueRelatedEntity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueRelatedEntity'
+  /allowedValueHierarchies:
+    get:
+      tags:
+        - Simplified endpoints
+      description: The information collected for this endpoint can be used to retrieve the hierarchical structure of allowed values in a domain.  For example a user can use it to break down the values of the Type of Instrument domain or the Economic Activity (i.e. NACE classification).  In the SMCube methodology this is defined as a Member Hierarchy object.
+      operationId: findAllowedValueHierarchies
+      parameters:
+        - $ref: '#/components/parameters/allowedValueHierarchySpecificParams_codes'
+        - $ref: '#/components/parameters/allowedValueHierarchySpecificParams_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/includeRendering'
+        - $ref: '#/components/parameters/includeCombinations'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueHierarchy'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueHierarchy'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueHierarchy'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdAllowedValueHierarchy'
+  /incomingLogicalLineages:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint allows to retrieve information on the incoming lineage for a certain destination (output) entity,  its attribute and allowed values which is implied by logical transformation rules or Mappings. It can be used to understand which input entities and  their components are required to generate or derive a certain entity and its components. It also provides information on the algorithm and filtering used  for the generation/derivation, when available.
+      operationId: findIncomingLogicalLineages
+      parameters:
+        - $ref: '#/components/parameters/incomingLogicalLineage_codes'
+        - $ref: '#/components/parameters/incomingLogicalLineage_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/sourceLayer'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingLogicalLineage'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingLogicalLineage'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingLogicalLineage'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingLogicalLineage'
+  /renderingTables:
+    get:
+      tags:
+        - Simplified endpoints
+      description: Provides rendering table information. Information stored in one or more entities can be displayed in a business report  which can also be used as a collection structure (e.g. FinRep template F 05.01). Every returned object is a (Rendering) Table object of the SMCube.
+      operationId: findRenderingTables
+      parameters:
+        - $ref: '#/components/parameters/renderingTable_codes'
+        - $ref: '#/components/parameters/renderingTable_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/includeRelated'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdRenderingTable'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdRenderingTable'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdRenderingTable'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdRenderingTable'
+  /incomingRenderingLogicalLineages:
+    get:
+      tags:
+        - Simplified endpoints
+      description: This endpoint allows to retrieve information on the incoming linage for a certain output renderingTables based on  its valueCombination (i.e. data points), attribute or allowed value which is implied by logical transformation rules,  and other forms of linage such as Forward engineering or Mapping. It can be used to understand which input entities and their components are  required to generate or derive a certain valueCombination and its components. It also provides information on the algorithm and filtering used  for the generation/derivation, when available.
+      operationId: findIncomingRenderingLogicalLineages
+      parameters:
+        - $ref: '#/components/parameters/incomingRenderingLogicalLineage_codes'
+        - $ref: '#/components/parameters/incomingRenderingLogicalLineage_businessIds'
+        - $ref: '#/components/parameters/maintenanceAgencyCodes'
+        - $ref: '#/components/parameters/entityTypes'
+        - $ref: '#/components/parameters/frameworkCodes'
+        - $ref: '#/components/parameters/versions'
+        - $ref: '#/components/parameters/validAfter'
+        - $ref: '#/components/parameters/validBefore'
+        - $ref: '#/components/parameters/validOn'
+        - $ref: '#/components/parameters/start'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/unfoldAttributes'
+        - $ref: '#/components/parameters/filter'
+        - $ref: '#/components/parameters/orderBy'
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/sourceLayer'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingRenderingLogicalLineage'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingRenderingLogicalLineage'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingRenderingLogicalLineage'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/BirdIncomingRenderingLogicalLineage'
+components:
+  schemas:
+    AllowedValue:
+      allOf:
+        - $ref: '#/components/schemas/CommonFields'
+        - type: object
+          properties:
+            mainValueHierarchy:
+              allOf:
+                - $ref: '#/components/schemas/CommonFields'
+    AllowedValueHierarchy:
+      allOf:
+        - $ref: '#/components/schemas/CommonFields'
+        - type: object
+          properties:
+            nodes:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/CommonFields'
+                  - type: object
+                    properties:
+                      otherValueHierarchies:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/CommonFields'
+                            - type: object
+                              properties:
+                                nodes:
+                                  type: array
+                                  items:
+                                    allOf:
+                                      - $ref: '#/components/schemas/CommonFields'
+                                      - type: object
+                                        properties:
+                                          otherValueHierarchies:
+                                            type: array
+                                            items:
+                                              allOf:
+                                                - $ref: '#/components/schemas/AllowedValueHierarchy'
+    AllowedValueRelatedEntity:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+    Attribute:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        restriction:
+          allOf:
+            - $ref: '#/components/schemas/CommonFields'
+            - type: object
+              properties:
+                maintenanceAgencyCode:
+                  type: string
+                constraints:
+                  $ref: '#/components/schemas/Constraints'
+                isNatural:
+                  type: boolean
+                allowedValues:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CommonFields'
+                      - type: object
+                        properties:
+                          maintenanceAgencyCode:
+                            type: string
+                mainValueHierarchy:
+                  allOf:
+                    - $ref: '#/components/schemas/CommonFields'
+                    - type: object
+                      properties:
+                        maintenanceAgencyCode:
+                          type: string
+        parentAttribute:
+          $ref: '#/components/schemas/ParentAttribute'
+    AttributeRelatedEntity:
+      allOf:
+        - $ref: '#/components/schemas/Entity'
+    DataModel:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        maintenanceAgencyCode:
+          type: string
+        entityHierarchyType:
+          type: string
+        nodes:
+          type: array
+          items:
+            type: object
+            properties:
+              businessId:
+                type: string
+              code:
+                type: string
+              name:
+                type: string
+              nodes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    businessId:
+                      type: string
+                    code:
+                      type: string
+                    name:
+                      type: string
+                    maintenanceAgencyCode:
+                      type: string
+                    entities:
+                      type: array
+                      items:
+                        allOf:
+                          - $ref: '#/components/schemas/Entity'
+                          - type: object
+                            properties:
+                              associatedEntities:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    maintenanceAgencyCode:
+                                      type: string
+                                    associatedEntityId:
+                                      type: string
+                                    primaryCardinality:
+                                      type: string
+                                    primaryMandatoriness:
+                                      type: boolean
+                                    foreignCardinality:
+                                      type: string
+                                    foreignMandatoriness:
+                                      type: boolean
+                                    typeOfAssociation:
+                                      type: string
+                                    relatedAttributes:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          foreignCode:
+                                            type: string
+                                          primaryCode:
+                                            type: string
+                              supertypeEntity:
+                                type: object
+                                properties:
+                                  supertypeEntityId:
+                                    type: string
+                              subtypeEntities:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    subtypeEntityId:
+                                      type: string
+                              linkedEntities:
+                                type: array
+                                items:
+                                  $ref: '#/components/schemas/LinkedEntity'
+    Entity:
+      type: object
+      properties:
+        code:
+          type: string
+        businessId:
+          type: string
+        name:
+          type: string
+        maintenanceAgencyCode:
+          type: string
+        frameworkCode:
+          type: string
+        version:
+          type: string
+        entityType:
+          type: string
+        description:
+          type: string
+        isAllowed:
+          type: boolean
+        isPublished:
+          type: boolean
+        datasetUrl:
+          type: string
+        attributes:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+              name:
+                type: string
+              description:
+                type: string
+              associatedAttributeCode:
+                type: string
+              dimensionType:
+                type: string
+              isFlow:
+                type: boolean
+              isMandatory:
+                type: boolean
+              isKey:
+                type: boolean
+              orderNo:
+                type: integer
+                format: int64
+              originalAttributeCode:
+                type: string
+              restriction:
+                allOf:
+                  - $ref: '#/components/schemas/CommonFields'
+                  - type: object
+                    properties:
+                      maintenanceAgencyCode:
+                        type: string
+                      dataType:
+                        type: string
+                      constraints:
+                        $ref: '#/components/schemas/Constraints'
+                      isNatural:
+                        type: boolean
+                      allowedValues:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/CommonFields'
+                            - type: object
+                              properties:
+                                maintenanceAgencyCode:
+                                  type: string
+                                classifications:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/Classification'
+                                legalReferences:
+                                  type: array
+                                  items:
+                                    $ref: '#/components/schemas/LegalReference'
+              parentAttribute:
+                $ref: '#/components/schemas/ParentAttribute'
+              classifications:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Classification'
+              legalReferences:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LegalReference'
+        valueCombinations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValueCombination'
+        classifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Classification'
+        legalReferences:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegalReference'
+    EntityRelatedEntityMapping:
+      allOf:
+        - $ref: '#/components/schemas/entityMapping'
+    AttributeRelatedAttributeMapping:
+      allOf:
+        - $ref: '#/components/schemas/Mapping'
+    Mapping:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        attributeMapping:
+          type: object
+          properties:
+            businessId:
+              type: string
+            code:
+              type: string
+            name:
+              type: string
+            input:
+              type: object
+              properties:
+                attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      businessId:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+            output:
+              type: object
+              properties:
+                attributes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      businessId:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+        algorithm:
+          type: string
+        allowedValueMapping:
+          type: object
+          properties:
+            rows:
+              type: array
+              items:
+                type: object
+                properties:
+                  rowNumber:
+                    type: integer
+                    format: int64
+                  input:
+                    type: object
+                    properties:
+                      attributes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            businessId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            allowedValue:
+                              type: object
+                              properties:
+                                businessId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+                  output:
+                    type: object
+                    properties:
+                      attributes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            businessId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            allowedValue:
+                              type: object
+                              properties:
+                                businessId:
+                                  type: string
+                                code:
+                                  type: string
+                                name:
+                                  type: string
+    ValueCombination:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        maintenanceAgencyCode:
+          type: string
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/valueCombination_Attribute'
+    IncomingLogicalLineage:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        entityType:
+          type: string
+        version:
+          type: string
+        entityMappings:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityMapping'
+        logicalTransformationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogicalTransformationRule'
+    RenderingTable:
+      allOf:
+        - $ref: '#/components/schemas/CommonFields'
+        - type: object
+          properties:
+            yHeaders:
+              type: array
+              items:
+                $ref: '#/components/schemas/DetailedHeader'
+            xHeaders:
+              type: array
+              items:
+                $ref: '#/components/schemas/DetailedHeader'
+            zHeaders:
+              type: array
+              items:
+                $ref: '#/components/schemas/DetailedHeader'
+            cells:
+              type: array
+              items:
+                type: object
+                properties:
+                  systemDataCode:
+                    type: string
+                  yHeader:
+                    $ref: '#/components/schemas/SimpleHeader'
+                  xHeader:
+                    $ref: '#/components/schemas/SimpleHeader'
+                  zHeader:
+                    $ref: '#/components/schemas/SimpleHeader'
+                  valueCombination:
+                    type: object
+                    properties:
+                      businessId:
+                        type: string
+                      code:
+                        type: string
+                      name:
+                        type: string
+                      version:
+                        type: string
+                      maintenanceAgencyCode:
+                        type: string
+                      attributes:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: '#/components/schemas/valueCombination_Attribute'
+                            - type: object
+                              properties:
+                                isKey:
+                                  type: boolean
+                                isMetric:
+                                  type: boolean
+    IncomingRenderingLogicalLineage:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        cells:
+          type: array
+          items:
+            type: object
+            properties:
+              systemDataCode:
+                type: string
+              yHeader:
+                $ref: '#/components/schemas/SimpleHeader'
+              xHeader:
+                $ref: '#/components/schemas/SimpleHeader'
+              zHeader:
+                $ref: '#/components/schemas/SimpleHeader'
+              valueCombination:
+                type: object
+                properties:
+                  businessId:
+                    type: string
+                  code:
+                    type: string
+                  name:
+                    type: string
+                  version:
+                    type: string
+                  maintenanceAgencyCode:
+                    type: string
+                  logicalTransformationRules:
+                    $ref: '#/components/schemas/LogicalTransformationRule'
+    BirdParameters:
+      type: object
+      properties:
+        codes:
+          description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "ANCRDT_INSTRMNT_C")
+          type: array
+          items:
+            type: string
+          nullable: true
+        businessIds:
+          description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "ANCRDT_INSTRMNT_C_1")
+          type: array
+          items:
+            type: string
+          nullable: true
+        maintenanceAgencyCodes:
+          description: Maintenance agencie(s) for the required objects. Used to filter out the results (e.g. "ECB" for reference-only objects)
+          type: array
+          items:
+            type: string
+          nullable: true
+        entityTypes:
+          description: Entity Type(s) for the required objects. Used to filter out the results (e.g. "D" for dissemination-only Entities). To be noted that this parameter does not only apply to the "entity" endpoint but to all end-points except mappings. For example, if you requested attributes via the attributes endpoint with the entityType="D" or "IL" filter, the software will return all the attributes belonging to a *Dissemination and Input Layer* entities, respectively. this parameter is only for the simplified endpoints.
+          type: array
+          items:
+            type: string
+          nullable: true
+        frameworkCodes:
+          description: Framework(s) for the required objects. Used to filter the results (e.g. "ANCRDT" for entities belonging to AnaCredit)
+          type: array
+          items:
+            type: string
+          nullable: true
+        versions:
+          description: Version(s) for the required objects will be returned (for versionable metadata objects)
+          type: array
+          items:
+            type: string
+          nullable: true
+        validAfter:
+          description: If provided, only objects valid after this date will be returned (e.g. >= "2021-06-30")
+          type: string
+          format: date
+          nullable: true
+        validBefore:
+          description: If provided, only objects valid before this date will be returned (e.g. < "2021-06-30")
+          type: string
+          format: date
+          nullable: true
+        validOn:
+          description: If provided, only objects valid at this date will be returned (e.g. = "2021-06-30")
+          type: string
+          format: date
+          nullable: true
+        start:
+          description: If provided, for a list of objects will only show results starting from the Nth object
+          type: integer
+          nullable: true
+        limit:
+          description: If provided, for a list of objects will only show N objects as results
+          type: integer
+          nullable: true
+        includeRelated:
+          description: In addition to the returned objects, if true provides the objects related to them, as displayed in the BIRD navigator
+          type: boolean
+          nullable: true
+          default: false
+        includeRendering:
+          description: If true, returns all the rendering information of the BIRD. To be noted that this fonctionality is still in beta mode and will have to be improved in the future
+          type: boolean
+          nullable: true
+          default: false
+        includeCombinations:
+          description: If true, returns all the serieskeys or data points (Combinations) structure of the returned Entities (only for simplified endpoints)
+          type: boolean
+          nullable: true
+          default: false
+        unfoldAttributes:
+          description: 'If true the variable sets are unfolded as single attributes/columns of the table. See the annex for an example of the functioning of Variable Sets. Default: false'
+          type: boolean
+          nullable: true
+          default: false
+        filter:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              operator:
+                type: string
+              value:
+                type: string
+        orderBy:
+          type: array
+          items:
+            type: object
+            properties:
+              property:
+                type: string
+              order:
+                type: string
+        format:
+          description: Used to specify the format of the response
+          type: string
+          nullable: true
+        sourceLayer:
+          description: The parameter sourceLayer specifies the source of the data lineage, as there may be multiple paths.  If sourceLayer is left empty, all possible lineage paths will be returned. For Derivation Rules, the sourceLayer can be either LDM or IL.  For Generation Rules, the sourceLayer can be either EIL or ELDM.
+          type: string
+          nullable: true
+    CommonFields:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+    Constraints:
+      type: object
+      properties:
+        maxValue:
+          type: string
+        minValue:
+          type: string
+        placeholder_for_other:
+          type: string
+    Classification:
+      type: object
+      properties:
+        classificationId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        code:
+          type: string
+    LegalReference:
+      type: object
+      properties:
+        article:
+          type: string
+        objectId:
+          type: string
+        legalTextId:
+          type: string
+        objectType:
+          type: string
+        validFrom:
+          type: string
+          format: date
+        validTo:
+          type: string
+          format: date
+    ParentAttribute:
+      type: object
+      properties:
+        parentAttributeId:
+          type: string
+        parentAttributeCode:
+          type: string
+        parentAttributeName:
+          type: string
+    valueCombination_Attribute:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        restriction:
+          allOf:
+            - $ref: '#/components/schemas/CommonFields'
+            - type: object
+              properties:
+                isNatural:
+                  type: boolean
+                maintenanceAgencyCode:
+                  type: string
+                allowedValues:
+                  type: array
+                  items:
+                    allOf:
+                      - $ref: '#/components/schemas/CommonFields'
+                      - type: object
+                        properties:
+                          maintenanceAgencyCode:
+                            type: string
+        parentAttribute:
+          $ref: '#/components/schemas/ParentAttribute'
+    LinkedEntity:
+      type: object
+      properties:
+        linkedEntityId:
+          type: string
+        linkedAttributes:
+          type: array
+          items:
+            type: object
+            properties:
+              primaryCode:
+                type: string
+              foreignCode:
+                type: string
+              comparator:
+                type: string
+              linkedAllowedValues:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    primaryAllowedValueId:
+                      type: string
+                    primaryAllowedValueCode:
+                      type: string
+                    foreignAllowedValueId:
+                      type: string
+                    foreignAllowedValueCode:
+                      type: string
+    BirdEntity:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            entities:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/Entity'
+                  - type: object
+                    properties:
+                      linkedEntities:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/LinkedEntity'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAttribute:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            attributes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Attribute'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdValueCombination:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            valueCombinations:
+              type: array
+              items:
+                $ref: '#/components/schemas/ValueCombination'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAttributeRelatedEntity:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            entities:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeRelatedEntity'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdDataModel:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            dataModels:
+              type: array
+              items:
+                $ref: '#/components/schemas/DataModel'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdMapping:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            mappings:
+              type: array
+              items:
+                $ref: '#/components/schemas/Mapping'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    entityMapping: |-
+      EntityMapping:
+        allOf:
+        - $ref: './commonFields.yml#/CommonFields'
+        - type: object
+          properties:
+            sourceEntityId:
+              type: string
+            destinationEntityId:
+              type: string
+            mappings:
+              type: array
+              items:
+                $ref: './mapping.yml#/Mapping'
+    BirdEntityRelatedEntityMapping:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            entityMappings:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityRelatedEntityMapping'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAttributeRelatedAttributeMapping:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            attributeRelatedAttributeMappings:
+              type: array
+              items:
+                $ref: '#/components/schemas/AttributeRelatedAttributeMapping'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAllowedValue:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            allowedValues:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllowedValue'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAllowedValueRelatedEntity:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            entities:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllowedValueRelatedEntity'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdAllowedValueHierarchy:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            allowedValueHierarchies:
+              type: array
+              items:
+                $ref: '#/components/schemas/AllowedValueHierarchy'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    EntityMapping:
+      allOf:
+        - $ref: '#/components/schemas/CommonFields'
+        - type: object
+          properties:
+            sourceEntityId:
+              type: string
+            destinationEntityId:
+              type: string
+            mappings:
+              type: array
+              items:
+                $ref: '#/components/schemas/Mapping'
+    logicalTransformationRule_AllowedValue:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+    EnumeratedSourceAttribute:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        isKey:
+          type: boolean
+        isMetric:
+          type: boolean
+        aggregationFunction:
+          type: string
+        sourceAllowedValues:
+          type: array
+          items:
+            $ref: '#/components/schemas/logicalTransformationRule_AllowedValue'
+    NonEnumeratedSourceAttribute:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        isKey:
+          type: boolean
+        isMetric:
+          type: boolean
+        aggregationFunction:
+          type: string
+    LogicalTransformationRule:
+      type: object
+      properties:
+        businessId:
+          type: string
+        semanticTransformationId:
+          type: string
+        algorithm:
+          type: string
+        sourceLayer:
+          type: string
+        destinationLayer:
+          type: string
+        transformationType:
+          type: String
+        additionalFilter:
+          type: object
+          properties:
+            filters:
+              type: string
+            sourceEntities:
+              type: array
+              items:
+                properties:
+                  businessId:
+                    type: string
+                  code:
+                    type: string
+                  name:
+                    type: string
+                  entityType:
+                    type: string
+                  version:
+                    type: string
+                  sourceAttributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnumeratedSourceAttribute'
+        destinationAttributes:
+          type: object
+          properties:
+            businessId:
+              type: string
+            code:
+              type: string
+            name:
+              type: string
+            isKey:
+              type: boolean
+            isMetric:
+              type: boolean
+            aggregationFunction:
+              type: string
+            destinationAllowedValues:
+              type: array
+              items:
+                allOf:
+                  - $ref: '#/components/schemas/logicalTransformationRule_AllowedValue'
+                  - type: object
+                    properties:
+                      sourceEntities:
+                        type: array
+                        items:
+                          properties:
+                            businessId:
+                              type: string
+                            code:
+                              type: string
+                            name:
+                              type: string
+                            entityType:
+                              type: string
+                            version:
+                              type: string
+                            sourceAttributes:
+                              type: array
+                              items:
+                                $ref: '#/components/schemas/EnumeratedSourceAttribute'
+            sourceEntities:
+              type: array
+              items:
+                properties:
+                  businessId:
+                    type: string
+                  code:
+                    type: string
+                  name:
+                    type: string
+                  entityType:
+                    type: string
+                  version:
+                    type: string
+                  sourceAttributes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NonEnumeratedSourceAttribute'
+    BirdIncomingLogicalLineage:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            destinationEntities:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncomingLogicalLineage'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    DetailedHeader:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        isAbstractHeader:
+          type: boolean
+        parentId:
+          type: string
+        order:
+          type: integer
+          format: int64
+        path:
+          type: string
+    SimpleHeader:
+      type: object
+      properties:
+        businessId:
+          type: string
+        code:
+          type: string
+    BirdRenderingTable:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            renderingTables:
+              type: array
+              items:
+                $ref: '#/components/schemas/RenderingTable'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+    BirdIncomingRenderingLogicalLineage:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/BirdParameters'
+        results:
+          type: object
+          properties:
+            renderingTables:
+              type: array
+              items:
+                $ref: '#/components/schemas/IncomingRenderingLogicalLineage'
+        warnings:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+      xml:
+        name: ApiV2Result
+  parameters:
+    codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "ANCRDT_INSTRMNT_C")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: ANCRDT_INSTRMNT_C,ANCRDT_ENTTY_DFLT_C
+        singleCode:
+          summary: Example of a single code
+          value: ANCRDT_INSTRMNT_C
+    businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "ANCRDT_INSTRMNT_C_1")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: ANCRDT_INSTRMNT_C_1,ANCRDT_ENTTY_DFLT_C_1
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: ANCRDT_INSTRMNT_C
+    maintenanceAgencyCodes:
+      name: maintenanceAgencyCodes
+      in: query
+      description: Maintenance agencie(s) for the required objects. Used to filter out the results (e.g. "ECB" for reference-only objects)
+      required: false
+      schema:
+        type: string
+    entityTypes:
+      name: entityTypes
+      in: query
+      description: Entity Type(s) for the required objects. Used to filter out the results (e.g. "D" for dissemination-only Entities). To be noted that this parameter does not only apply to the "entity" endpoint but to all end-points except mappings. For example, if you requested attributes via the attributes endpoint with the entityType="D" or "IL" filter, the software will return all the attributes belonging to a *Dissemination and Input Layer* entities, respectively. this parameter is only for the simplified endpoints.
+      required: false
+      schema:
+        type: string
+    frameworkCodes:
+      name: frameworkCodes
+      in: query
+      description: Framework(s) for the required objects. Used to filter the results (e.g. "ANCRDT" for entities belonging to AnaCredit)
+      required: false
+      schema:
+        type: string
+    versions:
+      name: versions
+      in: query
+      description: Version(s) for the required objects will be returned (for versionable metadata objects)
+      required: false
+      schema:
+        type: string
+    validAfter:
+      name: validAfter
+      in: query
+      description: If provided, only objects valid after this date will be returned (e.g. >= "2021-06-30")
+      required: false
+      schema:
+        type: string
+        format: date
+    validBefore:
+      name: validBefore
+      in: query
+      description: If provided, only objects valid before this date will be returned (e.g. < "2021-06-30")
+      required: false
+      schema:
+        type: string
+        format: date
+    validOn:
+      name: validOn
+      in: query
+      description: If provided, only objects valid at this date will be returned (e.g. = "2021-06-30")
+      required: false
+      schema:
+        type: string
+        format: date
+    start:
+      name: start
+      in: query
+      description: If provided, for a list of objects will only show results starting from the Nth object
+      required: false
+      schema:
+        type: integer
+    limit:
+      name: limit
+      in: query
+      description: If provided, for a list of objects will only show N objects as results
+      required: false
+      schema:
+        type: integer
+    includeRelated:
+      name: includeRelated
+      in: query
+      description: In addition to the returned objects, if true provides the objects related to them, as displayed in the BIRD navigator
+      required: false
+      schema:
+        type: boolean
+    includeRendering:
+      name: includeRendering
+      in: query
+      description: If true, returns all the rendering information of the BIRD. To be noted that this fonctionality is still in beta mode and will have to be improved in the future
+      required: false
+      schema:
+        type: boolean
+    includeCombinations:
+      name: includeCombinations
+      in: query
+      description: If true, returns all the serieskeys or data points (Combinations) structure of the returned Entities (only for simplified endpoints)
+      required: false
+      schema:
+        type: boolean
+    unfoldAttributes:
+      name: unfoldAttributes
+      in: query
+      description: 'If true the variable sets are unfolded as single attributes/columns of the table. See the annex for an example of the functioning of Variable Sets. Default: false'
+      required: false
+      schema:
+        type: boolean
+    filter:
+      name: filter
+      in: query
+      description: 'Used to filter the results based on specific object fileds (e.g. "name ne type of instrument"), only for the first level results. Supported filter operator: EQUALS, NE, LE, LT, GE and GT.'
+      required: false
+      schema:
+        type: string
+    orderBy:
+      name: orderBy
+      in: query
+      description: Used to sort the results based on a specific field. Only for the first level results. (e.g. "orderBy=code,-version")
+      required: false
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      description: Used to specify the format of the response
+      required: false
+      schema:
+        type: string
+      examples:
+        jsonFormat:
+          summary: JSON response format
+          value: JSON
+        xmlFormat:
+          summary: XML response format
+          value: XML
+    attributeSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleCode:
+          summary: Example of a single code
+          value: TYP_INSTRMNT
+    attributeSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: TYP_INSTRMNT
+    valueCombinationSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "42442_REF")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: 42442_REF,429852_REF
+        singleCode:
+          summary: Example of a single code
+          value: 42442_REF
+    valueCombinationSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "42442_REF")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: 42442_REF,429852_REF
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: 42442_REF
+    attributeRelatedEntitySpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleCode:
+          summary: Example of a single code
+          value: TYP_INSTRMNT
+    attributeRelatedEntitySpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: TYP_INSTRMNT
+    dataModelSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "ANCRDT_CLLCTN")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: ANCRDT_CLLCTN,BIRD_IL_HIERARCHY
+        singleCode:
+          summary: Example of a single code
+          value: ANCRDT_CLLCTN
+    dataModelSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "ANCRDT_CLLCTN")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: ANCRDT_CLLCTN,BIRD_IL_HIERARCHY
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: ANCRDT_CLLCTN
+    mappingSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "DPM_CPS")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: DPM_CPS,DPM_CTL
+        singleCode:
+          summary: Example of a single code
+          value: DPM_CPS
+    mappingSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "DPM_CPS")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: DPM_CPS,DPM_CTL
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: DPM_CPS
+    entityRelatedEntityMappingSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "M_F_05.01_REF_FINREP 3.0")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: M_F_05.01_REF_FINREP 3.0,M_F_06.01_REF_FINREP 3.0
+        singleCode:
+          summary: Example of a single code
+          value: M_F_05.01_REF_FINREP 3.0
+    entityRelatedEntityMappingSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "M_F_05.01_REF_FINREP 3.0")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: M_F_05.01_REF_FINREP 3.0,M_F_06.01_REF_FINREP 3.0
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: M_F_05.01_REF_FINREP 3.0
+    attributeRelatedAttributeMappingSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleCode:
+          summary: Example of a single code
+          value: TYP_INSTRMNT
+    attributeRelatedAttributeMappingSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "TYP_INSTRMNT")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: TYP_INSTRMNT,DT_RFRNC
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: TYP_INSTRMNT
+    validate:
+      name: validate
+      in: query
+      description: If set to "true", instead of returning the full object content, it returns whether the object in the SDD presents validation errors (i.e. ERROR, WARNING, INFO). This parameter is mostly useful for "draft" objects which are not yet finalised in the Production branch. Default=false. Only for SMCube-oriented endpoints and only for the SDD environment
+      required: false
+      schema:
+        type: boolean
+    allowedValueSpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "S11")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: S11,S12
+        singleCode:
+          summary: Example of a single code
+          value: S11
+    allowedValueSpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "INSTTTNL_SCTR_S11")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: INSTTTNL_SCTR_S11,INSTTTNL_SCTR_S12
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: INSTTTNL_SCTR_S11
+    allowedValueRelatedEntitySpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "S11")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: S11,S12
+        singleCode:
+          summary: Example of a single code
+          value: S11
+    allowedValueRelatedEntitySpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "INSTTTNL_SCTR_S11")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: INSTTTNL_SCTR_S11,INSTTTNL_SCTR_S12
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: INSTTTNL_SCTR_S11
+    allowedValueHierarchySpecificParams_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "5")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleCode:
+          summary: Example of multiple codes
+          value: 5,6
+        singleCode:
+          summary: Example of a single code
+          value: 5
+    allowedValueHierarchySpecificParams_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "AE_ITM_HIER_5")
+      required: false
+      schema:
+        type: string
+      examples:
+        multipleBusinessIds:
+          summary: Example of multiple businessIds
+          value: AE_ITM_HIER_5,INSTTTNL_SCTR_HIER_6
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: AE_ITM_HIER_5
+    incomingLogicalLineage_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "F_05.01_REF")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleCode:
+          summary: Example of a single code
+          value: F_05.01_REF
+    incomingLogicalLineage_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "FINREP_REF_F_05.01_REF_FINREP 3.0")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: FINREP_REF_F_05.01_REF_FINREP 3.0
+    sourceLayer:
+      name: sourceLayer
+      in: query
+      description: The parameter sourceLayer specifies the source of the data lineage, as there may be multiple paths.  If sourceLayer is left empty, all possible lineage paths will be returned. For Derivation Rules, the sourceLayer can be either LDM or IL.  For Generation Rules, the sourceLayer can be either EIL or ELDM.
+      required: false
+      schema:
+        type: string
+      examples:
+        singleSourceLayer:
+          summary: Example of a source layer
+          value: EIL
+    renderingTable_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "F_05.01_REF")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleCode:
+          summary: Example of a single code
+          value: F_05.01_REF
+    renderingTable_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "FINREP_REF_F_05.01_REF_FINREP 3.0")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: FINREP_REF_F_05.01_REF_FINREP 3.0
+    incomingRenderingLogicalLineage_codes:
+      name: codes
+      in: query
+      description: Specific code(s) of the object(s) to be selected or pattern to be followed for the selection (e.g. "F_05.01_REF")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleCode:
+          summary: Example of a single code
+          value: F_05.01_REF
+    incomingRenderingLogicalLineage_businessIds:
+      name: businessIds
+      in: query
+      description: Business identifier(s) of the object(s) to be returned. This can include the version of versionable objects (e.g. "FINREP_REF_F_05.01_REF_FINREP 3.0")
+      required: false
+      schema:
+        type: string
+      examples:
+        singleBusinessId:
+          summary: Example of a single businessId
+          value: FINREP_REF_F_05.01_REF_FINREP 3.0
